@@ -3,7 +3,7 @@ import lejos.nxt.Sound;
 
 /**
  * Handles the light localization by clocking the gridlines.
- *
+ *aa
  *
  */
 public class LightLocalizer {
