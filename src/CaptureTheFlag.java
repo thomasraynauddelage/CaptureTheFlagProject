@@ -35,6 +35,15 @@ public class CaptureTheFlag {
 		LightLocalizer lightLocalizer = new LightLocalizer(odometer, lightSensor);
 		Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C);
 		buttonChoice = Button.waitForAnyPress();
+		while (buttonChoice != Button.ID_LEFT 
+				&& buttonChoice != Button.ID_RIGHT);
+			
+			if (buttonChoice == Button.ID_LEFT) { 
+			
+				usLocalizer.doUSLocalization();
+				
+				
+			}
 
 }
 }
