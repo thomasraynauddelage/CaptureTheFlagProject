@@ -12,7 +12,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class CaptureTheFlag {
 	private final static double WHEEL_RADIUS = 2.122;
-	private final static double WHEEL_BASE = 15.53;
+	private final static double WHEEL_BASE = 10.24;
 
 	/**Main method.
 	 * Creates all the objects necessary for the system to perform localization, travel to the opponent's zone, find and capture the 
@@ -23,16 +23,16 @@ public class CaptureTheFlag {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
-		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.S1);
-		USPoller usPoller = new USPoller(ultrasonicSensor);
-		ColorSensor lightSensor = new ColorSensor(SensorPort.S2);
-		ColorSensor flagDetector = new ColorSensor(SensorPort.S3);
+		//UltrasonicSensor bottomUltrasonicSensor = new UltrasonicSensor(SensorPort.S3);
+		UltrasonicSensor topUltrasonicSensor = new UltrasonicSensor(SensorPort.  S2);
+		//USPoller usPollerBottom = new USPoller(topUltrasonicSensor);
+		USPoller usPollerTop = new USPoller(topUltrasonicSensor);
+		ColorSensor lightSensor = new ColorSensor(SensorPort.S1);
+		ColorSensor flagDetector = new ColorSensor(SensorPort.S4);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
-		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, usPoller);
-		Navigation navigation = new Navigation(odometer, objectDetector, usPoller, WHEEL_RADIUS, WHEEL_BASE);
-		USLocalizer usLocalizer = new USLocalizer(odometer, usPoller);
-		LightLocalizer lightLocalizer = new LightLocalizer(odometer, lightSensor);
+		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, usPollerTop);
+		Navigation navigation = new Navigation(odometer, objectDetector, usPollerTop, WHEEL_RADIUS, WHEEL_BASE);
 		Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C);
 		buttonChoice = Button.waitForAnyPress();
 		while (buttonChoice != Button.ID_LEFT 
@@ -40,8 +40,10 @@ public class CaptureTheFlag {
 			
 			if (buttonChoice == Button.ID_LEFT) { 
 			
+				USLocalizer usLocalizer = new USLocalizer(odometer, usPollerTop);
 				usLocalizer.doUSLocalization();
-				
+				LightLocalizer lightLocalizer = new LightLocalizer(odometer, lightSensor, navigation);
+				lightLocalizer.doLightLocalization();
 				
 			}
 

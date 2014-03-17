@@ -7,21 +7,24 @@ import lejos.nxt.Sound;
  *
  */
 public class LightLocalizer {
-	private final static double LIGHT_TO_CENTER = 12; 
+	private final static double LIGHT_TO_CENTER = -7; //MODIFIED
 	private Odometer odo;
 	private TwoWheeledRobot robot;
 	private ColorSensor ls;
+	private Navigation navigation;
 	private int lightValue;
 	
 	/**Constructor for the light localizer.
 	 * 
 	 * @param odo the odometer
 	 * @param ls the light sensor used to clock the grid lines
+	 * @param navigation 
 	 */
-	public LightLocalizer(Odometer odo, ColorSensor ls) {
+	public LightLocalizer(Odometer odo, ColorSensor ls, Navigation navigation) {
 		this.odo = odo;
 		this.robot = odo.getTwoWheeledRobot();
 		this.ls = ls;
+		this.navigation = navigation;
 		
 		// turn on the light
 		ls.setFloodlight(true);
@@ -36,13 +39,18 @@ public class LightLocalizer {
 		double xNegativeHeading, xPositiveHeading, yNegativeHeading, yPositiveHeading; // headings when crossing respective gridlines
 		double thetaY, thetaX; // angles subtending the arc connecting the intersections of the respective y/x axis
 		double xDisplacement, yDisplacement; // distance from the origin of the respective axis
-		double travelToRotationPoint; // travelling distance to get to the point where lightLocalization takes place
+		//double travelToRotationPoint; // travelling distance to get to the point where lightLocalization takes place
 		double correctionAngle; // angle to add to current heading in order to get the proper heading
-		travelToRotationPoint = odo.getY(); // starts from odo.getY which is 0
-		while(travelToRotationPoint<13){ // while loop to travel the distance
-			robot.setForwardSpeed(10); 
-			travelToRotationPoint = odo.getY();
-		}
+		//TEST
+	//	travelToRotationPoint = odo.getY(); // starts from odo.getY which is 0
+		//while(travelToRotationPoint<18){ // while loop to travel the distance
+		//	robot.setForwardSpeed(10); 
+		//	travelToRotationPoint = odo.getY();
+		//}
+		
+		navigation.goForward(18);
+		
+		
 		robot.setForwardSpeed(0); // stops motors after breaking out of while loop
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true}); // odometer reset
 		
@@ -59,6 +67,7 @@ public class LightLocalizer {
 				headings[i] = odo.getAng(); // get heading
 				polled = true; // changed value of polled to true to avoid a line from being detected twice 
 				Sound.beep();
+				//try { Thread.sleep(500); } catch (InterruptedException e) {}
 				i++;
 			}
 			if(lightValue > 400){ // once passed line, set polled to false once again
@@ -67,10 +76,12 @@ public class LightLocalizer {
 		}
 		robot.setSpeeds(0, 0);
 		// stores the values in the order in which the lines are clocked in an array
-		xNegativeHeading = headings[0]; 
-		yPositiveHeading = headings[1];
-		xPositiveHeading = headings[2];
-		yNegativeHeading = headings[3];
+		
+		//MODIFIED
+		xPositiveHeading = headings[0]; 
+		yNegativeHeading = headings[1];
+		xNegativeHeading = headings[2];
+		yPositiveHeading = headings[3];
 		
 		// do trig to compute (0,0) and 0 degrees
 		

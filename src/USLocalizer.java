@@ -47,7 +47,7 @@ public class USLocalizer {
 				distance = usPoller.getFilteredData();
 			}
 		}
-		try { Thread.sleep(250); } catch (InterruptedException e) {} //sleep time 250 ms for US
+		//try { Thread.sleep(1000); } catch (InterruptedException e) {} //sleep time 250 ms for US
 		// keep rotating until the robot sees a wall, then latch the angle
 
 		while(distance ==50){ // while not facing a wall
@@ -62,7 +62,7 @@ public class USLocalizer {
 			robot.setRotationSpeed(-ROTATION_SPEED);
 			distance = usPoller.getFilteredData();
 		}
-		try { Thread.sleep(250); } catch (InterruptedException e) {}
+		try { Thread.sleep(1000); } catch (InterruptedException e) {}
 		// keep rotating until the robot sees a wall, then latch the angle
 
 		if (distance == 50) { // if not facing wall
@@ -72,7 +72,7 @@ public class USLocalizer {
 			}
 			angleB = Math.abs(odo.getAng() - 360); // gets the left wall heading of the robot
 			LCD.drawString("b:   " + angleB, 0, 6);
-			try { Thread.sleep(250); } catch (InterruptedException e) {}
+			//try { Thread.sleep(1000); } catch (InterruptedException e) {}
 		}
 
 		// angleA is clockwise from angleB, so assume the average of the
@@ -88,7 +88,8 @@ public class USLocalizer {
 
 
 		currentAng = odo.getAng();
-		newAngle =deltaT - 90;
+		//CHANGE TO 45 degrees
+		newAngle =deltaT - 45;
 		robot.turnTo(Odometer.minimumAngleFromTo(currentAng, newAngle));
 		robot.setSpeeds(0.0, 0.0);
 
