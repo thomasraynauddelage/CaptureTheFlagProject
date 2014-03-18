@@ -7,7 +7,7 @@ import lejos.nxt.Sound;
  *
  */
 public class LightLocalizer {
-	private final static double LIGHT_TO_CENTER = -7; //MODIFIED
+	private final static double LIGHT_TO_CENTER = -8.5;
 	private Odometer odo;
 	private TwoWheeledRobot robot;
 	private ColorSensor ls;
@@ -41,15 +41,8 @@ public class LightLocalizer {
 		double xDisplacement, yDisplacement; // distance from the origin of the respective axis
 		//double travelToRotationPoint; // travelling distance to get to the point where lightLocalization takes place
 		double correctionAngle; // angle to add to current heading in order to get the proper heading
-		//TEST
-	//	travelToRotationPoint = odo.getY(); // starts from odo.getY which is 0
-		//while(travelToRotationPoint<18){ // while loop to travel the distance
-		//	robot.setForwardSpeed(10); 
-		//	travelToRotationPoint = odo.getY();
-		//}
 		
-		navigation.goForward(18);
-		
+		navigation.goForward(15);//position to start clocking
 		
 		robot.setForwardSpeed(0); // stops motors after breaking out of while loop
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true}); // odometer reset
@@ -63,14 +56,14 @@ public class LightLocalizer {
 		while(i <4){ // rotate until i = 4, i.e. all 4 gridlines have been clocked
 			robot.setRotationSpeed(22);
 			lightValue = ls.getNormalizedLightValue();
-			if(lightValue < 400 && polled == false){ // if it detects a line that hasn't been detected before
+			if(lightValue < 450 && polled == false){ // if it detects a line that hasn't been detected before
 				headings[i] = odo.getAng(); // get heading
 				polled = true; // changed value of polled to true to avoid a line from being detected twice 
 				Sound.beep();
 				//try { Thread.sleep(500); } catch (InterruptedException e) {}
 				i++;
 			}
-			if(lightValue > 400){ // once passed line, set polled to false once again
+			if(lightValue > 450){ // once passed line, set polled to false once again
 				polled = false;
 			}
 		}
@@ -111,7 +104,7 @@ public class LightLocalizer {
 		
 		// once on the origin, rotate counterclockwise until the robot reaches a gridline
 		lightValue = ls.getNormalizedLightValue();
-		while( lightValue >400){ // will straighten the robot
+		while( lightValue >450){ // will straighten the robot
 			robot.setRotationSpeed(-22);
 			lightValue = ls.getNormalizedLightValue();
 		}

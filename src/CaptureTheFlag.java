@@ -23,9 +23,8 @@ public class CaptureTheFlag {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
-		//UltrasonicSensor bottomUltrasonicSensor = new UltrasonicSensor(SensorPort.S3);
+		
 		UltrasonicSensor topUltrasonicSensor = new UltrasonicSensor(SensorPort.  S2);
-		//USPoller usPollerBottom = new USPoller(topUltrasonicSensor);
 		USPoller usPollerTop = new USPoller(topUltrasonicSensor);
 		ColorSensor lightSensor = new ColorSensor(SensorPort.S1);
 		ColorSensor flagDetector = new ColorSensor(SensorPort.S4);
@@ -44,7 +43,6 @@ public class CaptureTheFlag {
 				usLocalizer.doUSLocalization();
 				LightLocalizer lightLocalizer = new LightLocalizer(odometer, lightSensor, navigation);
 				lightLocalizer.doLightLocalization();
-				
 			}
 
 }
