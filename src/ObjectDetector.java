@@ -35,6 +35,11 @@ public class ObjectDetector {
 	 *If it is the block it calls capture(), otherwise it calls avoid().
 	 */
 	public void doObjectDetection(){
+		Color color = lightSensor.getColor();
+		int blueComponent = color.getBlue();
+		int redComponent = color.getRed();
+		int greenComponent = color.getGreen();
+		//Fill in cases here
 		
 	}
 	

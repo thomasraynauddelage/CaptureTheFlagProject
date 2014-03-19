@@ -12,7 +12,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class CaptureTheFlag {
 	private final static double WHEEL_RADIUS = 2.122;
-	private final static double WHEEL_BASE = 10.24;
+	private final static double WHEEL_BASE = 10.24; //Change to 10.24
 
 	/**Main method.
 	 * Creates all the objects necessary for the system to perform localization, travel to the opponent's zone, find and capture the 
@@ -23,7 +23,6 @@ public class CaptureTheFlag {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
-		
 		UltrasonicSensor topUltrasonicSensor = new UltrasonicSensor(SensorPort.  S2);
 		USPoller usPollerTop = new USPoller(topUltrasonicSensor);
 		ColorSensor lightSensor = new ColorSensor(SensorPort.S1);

@@ -7,7 +7,7 @@ import lejos.nxt.Sound;
  *
  */
 public class LightLocalizer {
-	private final static double LIGHT_TO_CENTER = -8.5;
+	private final static double LIGHT_TO_CENTER = 8.5; //MODIFIED -7
 	private Odometer odo;
 	private TwoWheeledRobot robot;
 	private ColorSensor ls;
@@ -40,9 +40,12 @@ public class LightLocalizer {
 		double thetaY, thetaX; // angles subtending the arc connecting the intersections of the respective y/x axis
 		double xDisplacement, yDisplacement; // distance from the origin of the respective axis
 		//double travelToRotationPoint; // travelling distance to get to the point where lightLocalization takes place
-		double correctionAngle; // angle to add to current heading in order to get the proper heading
+		double correctionAngleY; // angle to add to current heading in order to get the proper heading
+		double correctionAngleX;
+		double correctionAngle;
 		
-		navigation.goForward(15);//position to start clocking
+		navigation.goForward(13);
+		
 		
 		robot.setForwardSpeed(0); // stops motors after breaking out of while loop
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true}); // odometer reset
@@ -84,16 +87,24 @@ public class LightLocalizer {
 		thetaX = xPositiveHeading - xNegativeHeading; // calculates thetaX
 		xDisplacement = -LIGHT_TO_CENTER*Math.cos(Math.toRadians(thetaY/2)); // calculates xDisplacement
 		yDisplacement = -LIGHT_TO_CENTER*Math.cos(Math.toRadians(thetaX/2)); // calculates yDisplacement
-		correctionAngle = 270 - yNegativeHeading + (thetaY/2); // calculates correction angle
+		correctionAngleX = 270 - xNegativeHeading + (thetaX/2);
+		correctionAngleY = 270 - yNegativeHeading + (thetaY/2); // calculates correction angle
+		correctionAngle = (correctionAngleX+correctionAngleY)/2;
 		
 		
+		double currentAngle = odo.getAng();
+		navigation.travelTo(xDisplacement, yDisplacement);
+		navigation.turnTo(correctionAngleY);
+		
+		/*
 		double currentAngle = odo.getAng(); // gets current angle after clocking 4 gridlines
-		odo.setPosition(new double [] {xDisplacement, yDisplacement, currentAngle + correctionAngle}, new boolean [] {true, true, true}); // sets the odometer to actual values from origin
+		odo.setPosition(new double [] {xDisplacement, yDisplacement, currentAngle + correctionAngleY}, new boolean [] {true, true, true}); // sets the odometer to actual values from origin
 		double finalAngle = Math.atan((xDisplacement/yDisplacement)) + 45; // angle to rotate in order to point towards the origin
 		double distance = Math.sqrt(xDisplacement*xDisplacement + yDisplacement*yDisplacement); // magnitude of distance to travel in order to reach the origin
 		robot.turnTo(Odometer.minimumAngleFromTo(odo.getAng(), finalAngle)); // turn to the final angle from the current one
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true}); // reset odometer for travel loop
 		double travel = odo.getY(); // travel starts from 0
+		
 		while(travel<distance){ 
 			robot.setForwardSpeed(10);
 			travel = odo.getY();
@@ -110,7 +121,7 @@ public class LightLocalizer {
 		}
 		robot.setSpeeds(0, 0);
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
-		
+		*/
 	}
 	 
 
