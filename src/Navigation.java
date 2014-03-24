@@ -1,6 +1,7 @@
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.UltrasonicSensor;
 
 /**
  * Handles the displacements of the robot, allowing it to go forward, backward and to travel to specified coordinates.
@@ -20,15 +21,17 @@ public class Navigation extends Thread {
 	private double distanceTravelled;
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.B;
 	private Odometer odometer;
-	private USPoller usPoller;
+	//private USPoller usPoller;
 	private ObjectDetector objectDetector;
+	private UltrasonicSensor us;
 	
-	public Navigation (Odometer odometer, ObjectDetector objectDetector, USPoller usPoller, double wheelRadius, double wheelBase){
+	public Navigation (Odometer odometer, ObjectDetector objectDetector, UltrasonicSensor us, double wheelRadius, double wheelBase){
 		this.odometer = odometer;
 		this.objectDetector = objectDetector;
-		this.usPoller = usPoller;
+		this.us = us;
 		this.wheelRadius = wheelRadius;
 		this.wheelBase = wheelBase;
+		
 	}
 	
 	// TravelTo method that allows navigation to take place. 
@@ -124,7 +127,7 @@ public class Navigation extends Thread {
 				if (distanceTravelled >= distance){
 					break;
 				}
-				if(usPoller.getFilteredData() < 15 ){ // if the robot sees an object on the path
+				if(getFilteredData() < 15 ){ // if the robot sees an object on the path
 					isTravelling = false; //set to false so we exit the loop 
 				}
 				LCD.drawString("x     ", 0, 5);
@@ -135,7 +138,7 @@ public class Navigation extends Thread {
 			
 			leftMotor.setSpeed(0);
 			rightMotor.setSpeed(0);
-			objectDetector.doObjectDetection();	//call object detection to do the rest
+			//objectDetector.doObjectDetection();	//call object detection to do the rest
 				
 			}
 		
@@ -212,5 +215,25 @@ public class Navigation extends Thread {
 			travelForwardWithoutPolling(odometer.getX()+Math.sin(Math.toRadians(odometer.getAng())) * distance,odometer.getY()+ Math.cos(Math.toRadians(odometer.getAng())) * distance);
 		}
 		*/
+		private int getFilteredData() {
+			int distance;
+			// do a ping
+			us.ping();
+			//Sound.beep();
+			
+			// wait for the ping to complete
+			try { Thread.sleep(50); } catch (InterruptedException e) {}
+			
+			// there will be a delay here
+			distance = us.getDistance();
+			if(distance > 50){ // filters values above 50 cm
+				distance = 50;
+			} 
+			LCD.drawString("Distance:   " + distance, 0, 4);
+			return distance;
+		}
+		
+		
+	}
 
-}
+

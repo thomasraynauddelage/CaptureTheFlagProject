@@ -90,12 +90,9 @@ public class LightLocalizer {
 		correctionAngleX = 270 - xNegativeHeading + (thetaX/2);
 		correctionAngleY = 270 - yNegativeHeading + (thetaY/2); // calculates correction angle
 		correctionAngle = (correctionAngleX+correctionAngleY)/2;
-		
-		
 		double currentAngle = odo.getAng();
 		navigation.travelTo(xDisplacement, yDisplacement);
 		navigation.turnTo(correctionAngleY);
-		
 		/*
 		double currentAngle = odo.getAng(); // gets current angle after clocking 4 gridlines
 		odo.setPosition(new double [] {xDisplacement, yDisplacement, currentAngle + correctionAngleY}, new boolean [] {true, true, true}); // sets the odometer to actual values from origin

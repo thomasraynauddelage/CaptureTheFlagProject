@@ -13,7 +13,8 @@ public class USLocalizer {
 	private double currentAng;
 	private TwoWheeledRobot robot;
 	//private UltrasonicSensor us; // use for us.getFilteredData() if necessary
-	private USPoller usPoller;
+	//private USPoller usPoller;
+	private UltrasonicSensor us;
 	public int distance;
 	private double deltaT;
 	private double newAngle;
@@ -23,10 +24,10 @@ public class USLocalizer {
  * @param odo the odometer
  * @param usPoller the usPoller
  */
-	public USLocalizer(Odometer odo, USPoller usPoller) {
+	public USLocalizer(Odometer odo, UltrasonicSensor us) {
 		this.odo = odo;
 		this.robot = odo.getTwoWheeledRobot();
-		this.usPoller = usPoller;
+		this.us = us;
 
 		// switch off the ultrasonic sensor
 		//us.off();
@@ -40,11 +41,11 @@ public class USLocalizer {
 		double [] pos = new double [3];
 		double angleA =0.0, angleB =0.0;
 		// rotate the robot until it sees no wall
-		distance = usPoller.getFilteredData();
+		distance = getFilteredData();
 		if (distance < 50 ){ // if facing a wall
 			while(distance < 50 ){ // while facing a wall
 				robot.setRotationSpeed(ROTATION_SPEED);
-				distance = usPoller.getFilteredData();
+				distance = getFilteredData();
 			}
 		}
 		try { Thread.sleep(1000); } catch (InterruptedException e) {} //sleep time 250 ms for US
@@ -52,7 +53,7 @@ public class USLocalizer {
 
 		while(distance ==50){ // while not facing a wall
 			robot.setRotationSpeed(ROTATION_SPEED);
-			distance = usPoller.getFilteredData();
+			distance = getFilteredData();
 		}
 		angleA = Math.abs(odo.getAng() - 360); // gets the bottom wall heading of robot 
 		LCD.drawString("a:   " + angleA, 0, 6);
@@ -60,7 +61,7 @@ public class USLocalizer {
 
 		while (distance < 50){ // while facing wall
 			robot.setRotationSpeed(-ROTATION_SPEED);
-			distance = usPoller.getFilteredData();
+			distance = getFilteredData();
 		}
 		try { Thread.sleep(1000); } catch (InterruptedException e) {}
 		// keep rotating until the robot sees a wall, then latch the angle
@@ -68,10 +69,11 @@ public class USLocalizer {
 		if (distance == 50) { // if not facing wall
 			while (distance == 50) { // while not facing wall
 				robot.setRotationSpeed(-ROTATION_SPEED);
-				distance = usPoller.getFilteredData();
+				distance = getFilteredData();
 			}
 			angleB = Math.abs(odo.getAng() - 360); // gets the left wall heading of the robot
 			LCD.drawString("b:   " + angleB, 0, 6);
+			//try { Thread.sleep(1000); } catch (InterruptedException e) {}
 		}
 
 		// angleA is clockwise from angleB, so assume the average of the
@@ -85,13 +87,35 @@ public class USLocalizer {
 			deltaT = 225 - (angleA + angleB)/2;
 		}
 
+
 		currentAng = odo.getAng();
-		
+		//CHANGE TO 45 degrees
 		newAngle =deltaT - 45;
 		robot.turnTo(Odometer.minimumAngleFromTo(currentAng, newAngle));
 		robot.setSpeeds(0.0, 0.0);
 
 		odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
+		
 	}
-
+	
+	private int getFilteredData() {
+		int distance;
+		// do a ping
+		us.ping();
+		//Sound.beep();
+		
+		// wait for the ping to complete
+		try { Thread.sleep(50); } catch (InterruptedException e) {}
+		
+		// there will be a delay here
+		distance = us.getDistance();
+		if(distance > 50){ // filters values above 50 cm
+			distance = 50;
+		} 
+		LCD.drawString("Distance:   " + distance, 0, 4);
+		return distance;
+	}
+	
+	
 }
+
