@@ -87,9 +87,9 @@ public class LightLocalizer {
 		thetaX = xPositiveHeading - xNegativeHeading; // calculates thetaX
 		xDisplacement = -LIGHT_TO_CENTER*Math.cos(Math.toRadians(thetaY/2)); // calculates xDisplacement
 		yDisplacement = -LIGHT_TO_CENTER*Math.cos(Math.toRadians(thetaX/2)); // calculates yDisplacement
-		correctionAngleX = 270 - xNegativeHeading + (thetaX/2);
+		//correctionAngleX = 270 - xNegativeHeading + (thetaX/2);
 		correctionAngleY = 270 - yNegativeHeading + (thetaY/2); // calculates correction angle
-		correctionAngle = (correctionAngleX+correctionAngleY)/2;
+		//correctionAngle = (correctionAngleX+correctionAngleY)/2;
 		double currentAngle = odo.getAng();
 		navigation.travelTo(xDisplacement, yDisplacement);
 		navigation.turnTo(correctionAngleY);

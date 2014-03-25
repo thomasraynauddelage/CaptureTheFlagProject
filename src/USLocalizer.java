@@ -90,7 +90,7 @@ public class USLocalizer {
 
 		currentAng = odo.getAng();
 		//CHANGE TO 45 degrees
-		newAngle =deltaT - 45;
+		newAngle =deltaT - 90;
 		robot.turnTo(Odometer.minimumAngleFromTo(currentAng, newAngle));
 		robot.setSpeeds(0.0, 0.0);
 

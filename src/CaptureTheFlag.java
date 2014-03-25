@@ -55,29 +55,30 @@ public class CaptureTheFlag {
 
 		
 		int buttonChoice;
+		int flagColor=0;
 		//UltrasonicSensor bottomUltrasonicSensor = new UltrasonicSensor(SensorPort.S3);
-		UltrasonicSensor topUltrasonicSensor = new UltrasonicSensor(SensorPort.  S2);
+		ColorSensor aLightSensor = new ColorSensor(SensorPort.S1);
+		ColorSensor bLightSensor = new ColorSensor(SensorPort.S2);
+		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.  S3);
 		//USPoller usPollerBottom = new USPoller(topUltrasonicSensor);
-		USPoller usPollerTop = new USPoller(topUltrasonicSensor);
-		ColorSensor lightSensor = new ColorSensor(SensorPort.S1);
+		USPoller usPollerTop = new USPoller(ultrasonicSensor);
 		ColorSensor flagDetector = new ColorSensor(SensorPort.S4);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
 		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, usPollerTop);
-		Navigation navigation = new Navigation(odometer, objectDetector,topUltrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
-		Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, topUltrasonicSensor);
+		Navigation navigation = new Navigation(odometer, objectDetector,ultrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
+		Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
 		buttonChoice = Button.waitForAnyPress();
 		while (buttonChoice != Button.ID_LEFT 
 				&& buttonChoice != Button.ID_RIGHT);
 			
 			if (buttonChoice == Button.ID_LEFT) { 
 			
-				USLocalizer usLocalizer = new USLocalizer(odometer, topUltrasonicSensor);
+				USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
 				usLocalizer.doUSLocalization();
-				robot.rotate(45);
-				//LightLocalizer lightLocalizer = new LightLocalizer(odometer, lightSensor, navigation);
-				//lightLocalizer.doLightLocalization();
-				search.travelToZone(91.44, 60.96, 0, 0);
+				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer);
+				tll.doLightLocalization();
+				//search.travelToZone(91.44, 60.96, 0, 0);
 			}
 
 }

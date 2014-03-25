@@ -10,6 +10,11 @@ import lejos.nxt.UltrasonicSensor;
  */
 
 public class Search {
+	private final int LIGHT_BLUE=0;
+	private final int RED=0;
+	private final int YELLOW=0;
+	private final int WHITE=0;
+	private final int DARK_BLUE=0;
 	public final double TILE_DISTANCE = 30.48;
 	private Navigation navigation;
 	private Odometer odometer;
@@ -17,6 +22,8 @@ public class Search {
 	private TwoWheeledRobot robot;
 	private NXTRegulatedMotor clawMotor;
 	private UltrasonicSensor us;
+	private int flagColor;
+	
 	
 	/**Constructor for the Search.
 	 * 
@@ -26,13 +33,15 @@ public class Search {
 	 * @param od the object detector
 	 * @param clawMotor the motor used for the claw
 	 */
-	public Search(Navigation nav, Odometer odo, TwoWheeledRobot robot, ObjectDetector od, NXTRegulatedMotor clawMotor, UltrasonicSensor us){
+	public Search(Navigation nav, Odometer odo, TwoWheeledRobot robot, ObjectDetector od, NXTRegulatedMotor clawMotor, UltrasonicSensor us, int flagColor){
 		this.navigation = navigation;
 		this.odometer = odometer;
 		this.robot = robot;
 		this.objectDetector = objectDetector;
 		this.clawMotor = clawMotor;
 		this.us = us;
+		this.flagColor = flagColor;
+		us.off();
 	}
 	
 	/**Makes the robot travel to the bottom left corner of the zone.
