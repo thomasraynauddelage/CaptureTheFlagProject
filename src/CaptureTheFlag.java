@@ -14,7 +14,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class CaptureTheFlag {
 	private final static double WHEEL_RADIUS = 2.122;
-	private final static double WHEEL_BASE = 15.24; //Change to 10.24
+	private final static double WHEEL_BASE = 17.00; //Change to 10.24
 
 	/**Main method.
 	 * Creates all the objects necessary for the system to perform localization, travel to the opponent's zone, find and capture the 
@@ -59,15 +59,15 @@ public class CaptureTheFlag {
 		//UltrasonicSensor bottomUltrasonicSensor = new UltrasonicSensor(SensorPort.S3);
 		ColorSensor aLightSensor = new ColorSensor(SensorPort.S1);
 		ColorSensor bLightSensor = new ColorSensor(SensorPort.S2);
-		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.  S3);
+		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.S4);
 		//USPoller usPollerBottom = new USPoller(topUltrasonicSensor);
 		USPoller usPollerTop = new USPoller(ultrasonicSensor);
-		ColorSensor flagDetector = new ColorSensor(SensorPort.S4);
+		ColorSensor flagDetector = new ColorSensor(SensorPort.S3);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
 		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, usPollerTop);
 		Navigation navigation = new Navigation(odometer, objectDetector,ultrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
-		Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
+		//Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
 		buttonChoice = Button.waitForAnyPress();
 		while (buttonChoice != Button.ID_LEFT 
 				&& buttonChoice != Button.ID_RIGHT);
@@ -76,9 +76,10 @@ public class CaptureTheFlag {
 			
 				USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
 				usLocalizer.doUSLocalization();
-				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer);
+				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer, navigation);
 				tll.doLightLocalization();
-				//search.travelToZone(91.44, 60.96, 0, 0);
+				//Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
+				//search.travelToZone(60.96, 60.96, 0, 0);
 			}
 
 }

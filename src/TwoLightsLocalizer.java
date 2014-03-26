@@ -10,10 +10,12 @@ import lejos.nxt.Sound;
  *
  */
 public class TwoLightsLocalizer {
+private final double LIGHT_SENSOR_TO_AXLE_TRACK = 3.7;
 private ColorSensor aLightSensor; 
 private ColorSensor bLightSensor; 
 private TwoWheeledRobot robot;
 private Odometer odometer;
+private Navigation navigation;
 public enum Sensor {A,B, NULL};
 
 
@@ -24,11 +26,12 @@ public enum Sensor {A,B, NULL};
 	 * @param bLightSensor the light sensor on the right of the axle track
 	 * @param odometer the odometer
 	 */
-	public TwoLightsLocalizer(TwoWheeledRobot robot, ColorSensor aLightSensor, ColorSensor bLightSensor, Odometer odometer){
+	public TwoLightsLocalizer(TwoWheeledRobot robot, ColorSensor aLightSensor, ColorSensor bLightSensor, Odometer odometer, Navigation navigation){
 		this.robot = robot;
 		this.aLightSensor = aLightSensor;
 		this.bLightSensor = bLightSensor;
 		this.odometer = odometer;
+		this.navigation = navigation;
 		
 	}
 	
@@ -37,9 +40,12 @@ public enum Sensor {A,B, NULL};
 	 * 
 	 */
 	public void doLightLocalization(){
+		robot.setForwardSpeed(10);
 		goForwardAndAlign();
+		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		robot.rotate(90);
 		goForwardAndAlign();
+		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		robot.rotate(-90);
 		odometer.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
 	}  
@@ -49,18 +55,17 @@ public enum Sensor {A,B, NULL};
 	 */
 	public void goForwardAndAlign(){
 		robot.setForwardSpeed(10);
-		//IMPLEMENT GO FORWARD
 		boolean firstLineFound = false;
 		
 		Sensor sensor = Sensor.NULL;
 		
 		while(!firstLineFound){
-			if (aLightSensor.getNormalizedLightValue()<500){
+			if (aLightSensor.getNormalizedLightValue()<400){
 				sensor = Sensor.A;
 				firstLineFound = true;
 				Sound.beep();
 			}
-			if(bLightSensor.getNormalizedLightValue()<500){
+			if(bLightSensor.getNormalizedLightValue()<400){
 				sensor = Sensor.B;
 				firstLineFound = true;
 				Sound.beep();
@@ -72,9 +77,8 @@ public enum Sensor {A,B, NULL};
 		if(sensor == Sensor.A){
 
 			while(!secondLineFound){
-				robot.setRotationSpeed(-5);
-				//IMPLEMENT ROTATE
-				if(bLightSensor.getNormalizedLightValue()<500){
+				robot.setRotationSpeed(-10);
+				if(bLightSensor.getNormalizedLightValue()<400){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -84,8 +88,8 @@ public enum Sensor {A,B, NULL};
 		else if(sensor == Sensor.B){
 
 			while(!secondLineFound){
-				robot.setRotationSpeed(5);
-				if(aLightSensor.getNormalizedLightValue()<500){
+				robot.setRotationSpeed(10);
+				if(aLightSensor.getNormalizedLightValue()<400){
 					secondLineFound = true;
 					Sound.beep();
 				}

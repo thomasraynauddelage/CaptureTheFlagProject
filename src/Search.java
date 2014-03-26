@@ -34,7 +34,7 @@ public class Search {
 	 * @param od the object detector
 	 * @param clawMotor the motor used for the claw
 	 */
-	public Search(Navigation nav, Odometer odo, TwoWheeledRobot robot, ObjectDetector od, NXTRegulatedMotor clawMotor, UltrasonicSensor us, int flagColor){
+	public Search(Navigation navigation, Odometer odometer, TwoWheeledRobot robot, ObjectDetector objectDetector, NXTRegulatedMotor clawMotor, UltrasonicSensor us, int flagColor){
 		this.navigation = navigation;
 		this.odometer = odometer;
 		this.robot = robot;
@@ -42,7 +42,7 @@ public class Search {
 		this.clawMotor = clawMotor;
 		this.us = us;
 		this.flagColor = flagColor;
-		us.off();
+		
 	}
 	
 	/**Makes the robot travel to the bottom left corner of the zone.
@@ -93,7 +93,7 @@ public class Search {
 			robot.rotate(180);
 			navigation.goForward(-15);
 			clawMotor.rotate(500);
-			
+			   
 		}
 		else{
 			objectDetector.rotateAndPoll(flagColor);
