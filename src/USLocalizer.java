@@ -8,7 +8,7 @@ import lejos.nxt.UltrasonicSensor;
  */
 public class USLocalizer {
 
-	private static final double ROTATION_SPEED = 30;
+	private static final double ROTATION_SPEED = 50;
 	private Odometer odo;
 	private double currentAng;
 	private TwoWheeledRobot robot;

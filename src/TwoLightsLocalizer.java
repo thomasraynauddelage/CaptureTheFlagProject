@@ -2,7 +2,7 @@ import lejos.nxt.ColorSensor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 
-/**Class used to do the light localization using 2 light sensors placed at the axle track level.
+/**Class used to do the light localization using 2 light sensors placed at a fixed distance from the axle track (3.7 cm).
  * 
  * 
  * 
@@ -11,12 +11,12 @@ import lejos.nxt.Sound;
  */
 public class TwoLightsLocalizer {
 private final double LIGHT_SENSOR_TO_AXLE_TRACK = 3.7;
-private ColorSensor aLightSensor; 
-private ColorSensor bLightSensor; 
+private ColorSensor leftLightSensor; 
+private ColorSensor rightLightSensor; 
 private TwoWheeledRobot robot;
 private Odometer odometer;
 private Navigation navigation;
-public enum Sensor {A,B, NULL};
+public enum Sensor {LEFT,RIGHT, NULL};
 
 
 	/**Constructor for the TwoLightsLocalizer.
@@ -26,10 +26,10 @@ public enum Sensor {A,B, NULL};
 	 * @param bLightSensor the light sensor on the right of the axle track
 	 * @param odometer the odometer
 	 */
-	public TwoLightsLocalizer(TwoWheeledRobot robot, ColorSensor aLightSensor, ColorSensor bLightSensor, Odometer odometer, Navigation navigation){
+	public TwoLightsLocalizer(TwoWheeledRobot robot, ColorSensor leftLightSensor, ColorSensor rightLightSensor, Odometer odometer, Navigation navigation){
 		this.robot = robot;
-		this.aLightSensor = aLightSensor;
-		this.bLightSensor = bLightSensor;
+		this.leftLightSensor = leftLightSensor;
+		this.rightLightSensor = rightLightSensor;
 		this.odometer = odometer;
 		this.navigation = navigation;
 		
@@ -42,10 +42,8 @@ public enum Sensor {A,B, NULL};
 	public void doLightLocalization(){
 		robot.setForwardSpeed(10);
 		goForwardAndAlign();
-		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		robot.rotate(90);
 		goForwardAndAlign();
-		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		robot.rotate(-90);
 		odometer.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
 	}  
@@ -60,13 +58,13 @@ public enum Sensor {A,B, NULL};
 		Sensor sensor = Sensor.NULL;
 		
 		while(!firstLineFound){
-			if (aLightSensor.getNormalizedLightValue()<400){
-				sensor = Sensor.A;
+			if (leftLightSensor.getNormalizedLightValue()<400){
+				sensor = Sensor.LEFT;
 				firstLineFound = true;
 				Sound.beep();
 			}
-			if(bLightSensor.getNormalizedLightValue()<400){
-				sensor = Sensor.B;
+			else if(rightLightSensor.getNormalizedLightValue()<400){
+				sensor = Sensor.RIGHT;
 				firstLineFound = true;
 				Sound.beep();
 				
@@ -74,22 +72,22 @@ public enum Sensor {A,B, NULL};
 		}
 		robot.setForwardSpeed(0);
 		boolean secondLineFound = false;
-		if(sensor == Sensor.A){
+		if(sensor == Sensor.LEFT){
 
 			while(!secondLineFound){
-				robot.setRotationSpeed(-10);
-				if(bLightSensor.getNormalizedLightValue()<400){
+				robot.setRightMotorSpeed(300);
+				if(rightLightSensor.getNormalizedLightValue()<400){
 					secondLineFound = true;
 					Sound.beep();
 				}
 			}
 		}
 
-		else if(sensor == Sensor.B){
+		else if(sensor == Sensor.RIGHT){
 
 			while(!secondLineFound){
-				robot.setRotationSpeed(10);
-				if(aLightSensor.getNormalizedLightValue()<400){
+				robot.setLeftMotorSpeed(300);
+				if(leftLightSensor.getNormalizedLightValue()<400){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -98,7 +96,7 @@ public enum Sensor {A,B, NULL};
 		}
 
 		robot.setRotationSpeed(0);
-		
+		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		
 	}
 }

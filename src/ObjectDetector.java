@@ -12,7 +12,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class ObjectDetector {
 
-	public enum ObjectType {FLAG, OBSTACLE};
+	public enum ObjectType {FLAG, OBSTACLE,NULL};
 	private final int LIGHT_BLUE=1;
 	private final int RED=2;
 	private final int YELLOW=3;
@@ -32,10 +32,11 @@ public class ObjectDetector {
 	 * @param usPoller the ultrasonic poller
 	 */
 	public ObjectDetector(ColorSensor colorSensor,
-			TwoWheeledRobot robot, USPoller usPoller) {
+			TwoWheeledRobot robot, UltrasonicSensor us) {
 		this.colorSensor = colorSensor;
 		this.robot = robot;
-		this.usPoller = usPoller;
+		this.us =  us;
+		object= ObjectType.NULL;
 	}
 	
 	/**
@@ -100,10 +101,10 @@ public class ObjectDetector {
 	 */
 	public void rotateAndPoll(int flagColor){
 		double heading = robot.getHeading();	//get the initial heading of the robot
-		int distance;
+		
 		boolean foundFlag = false;
 		while (true) {
-			distance = getFilteredData();
+			int distance = getFilteredData();
 			//LCD.drawString("Angle           ", 0, 2);
 			//LCD.drawString("Angle " + robot.getHeading(), 0, 2);
 			LCD.drawString("No Object Detected", 0, 0);

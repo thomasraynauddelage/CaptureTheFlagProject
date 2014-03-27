@@ -14,7 +14,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class CaptureTheFlag {
 	private final static double WHEEL_RADIUS = 2.122;
-	private final static double WHEEL_BASE = 17.00; //Change to 10.24
+	private final static double WHEEL_BASE = 16.85; 
 
 	/**Main method.
 	 * Creates all the objects necessary for the system to perform localization, travel to the opponent's zone, find and capture the 
@@ -55,8 +55,7 @@ public class CaptureTheFlag {
 
 		
 		int buttonChoice;
-		int flagColor=0;
-		//UltrasonicSensor bottomUltrasonicSensor = new UltrasonicSensor(SensorPort.S3);
+		int flagColor=1;
 		ColorSensor aLightSensor = new ColorSensor(SensorPort.S1);
 		ColorSensor bLightSensor = new ColorSensor(SensorPort.S2);
 		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.S4);
@@ -65,21 +64,22 @@ public class CaptureTheFlag {
 		ColorSensor flagDetector = new ColorSensor(SensorPort.S3);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
-		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, usPollerTop);
+		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, ultrasonicSensor);
 		Navigation navigation = new Navigation(odometer, objectDetector,ultrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
-		//Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
+		
 		buttonChoice = Button.waitForAnyPress();
 		while (buttonChoice != Button.ID_LEFT 
 				&& buttonChoice != Button.ID_RIGHT);
 			
 			if (buttonChoice == Button.ID_LEFT) { 
 			
-				USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
-				usLocalizer.doUSLocalization();
+				//USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
+				//usLocalizer.doUSLocalization();
 				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer, navigation);
-				tll.doLightLocalization();
-				//Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor);
-				//search.travelToZone(60.96, 60.96, 0, 0);
+				//tll.doLightLocalization();
+				Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor, tll);
+				//search.travelToZone(4, 4, 6, 6);
+				search.doSearch();
 			}
 
 }
