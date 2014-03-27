@@ -11,7 +11,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class Navigation extends Thread {
 
-	private static final int FORWARD_SPEED = 150;
+	private static final int FORWARD_SPEED = 200;
 	private static final int ROTATE_SPEED = 90;
 	private double wheelRadius, wheelBase;
 	private double theta;
