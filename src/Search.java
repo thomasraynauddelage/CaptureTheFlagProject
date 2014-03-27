@@ -175,7 +175,9 @@ public class Search {
 		else{	//navigation is done
 			Sound.beep();
 		}
-
+		tll.goToNextLine();
+		robot.rotate(90);
+		tll.goToNextLine();
 	}
 
 	
@@ -184,18 +186,25 @@ public class Search {
 	 * Performs the search. 
 	 */
 	public void doSearch(){
+		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
+			robot.rotate(objectDetector.getCorrectionAngle());
+			navigation.backtrack(15);
 			robot.rotate(180);
-			navigation.goForward(-15);
 			clawMotor.rotate(-500);
+			navigation.backtrack(20);
 			clawMotor.rotate(500);
-			   
+
+
 		}
 		else{
-			objectDetector.rotateAndPoll(flagColor);
+
 		}
 
 	}
+
+		
+	
 	
 	private int getFilteredData() {
 		int distance;

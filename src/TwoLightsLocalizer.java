@@ -133,6 +133,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 					Sound.beep();
 				}
 			}
+			robot.setRightMotorSpeed(0);
 		}
 
 		else if(sensor == Sensor.RIGHT){
@@ -144,10 +145,9 @@ public enum Sensor {LEFT,RIGHT, NULL};
 					Sound.beep();
 				}
 			}
-
+			robot.setLeftMotorSpeed(0);
 		}
 
-		robot.setRotationSpeed(0);
 		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 
 

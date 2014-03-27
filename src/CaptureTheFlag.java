@@ -14,7 +14,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class CaptureTheFlag {
 	private final static double WHEEL_RADIUS = 2.122;
-	private final static double WHEEL_BASE = 16.85; 
+	private final static double WHEEL_BASE = 16.00; 
 
 	/**Main method.
 	 * Creates all the objects necessary for the system to perform localization, travel to the opponent's zone, find and capture the 
@@ -64,8 +64,8 @@ public class CaptureTheFlag {
 		ColorSensor flagDetector = new ColorSensor(SensorPort.S3);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
-		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, ultrasonicSensor);
-		Navigation navigation = new Navigation(odometer, objectDetector,ultrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
+		Navigation navigation = new Navigation(odometer,ultrasonicSensor , WHEEL_RADIUS, WHEEL_BASE);
+		ObjectDetector objectDetector = new ObjectDetector(flagDetector , robot, ultrasonicSensor, navigation);
 		
 		buttonChoice = Button.waitForAnyPress();
 		while (buttonChoice != Button.ID_LEFT 
@@ -79,7 +79,7 @@ public class CaptureTheFlag {
 				tll.doLightLocalization();
 				Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor, tll);
 				search.travelToZone(4, 4, 6, 6);
-				//search.doSearch();
+				search.doSearch();
 			}
 
 }

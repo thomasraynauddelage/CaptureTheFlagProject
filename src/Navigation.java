@@ -11,7 +11,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class Navigation extends Thread {
 
-	private static final int FORWARD_SPEED = 200;
+	private static final int FORWARD_SPEED = 150;
 	private static final int ROTATE_SPEED = 90;
 	private double wheelRadius, wheelBase;
 	private double theta;
@@ -22,12 +22,10 @@ public class Navigation extends Thread {
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.B;
 	private Odometer odometer;
 	//private USPoller usPoller;
-	private ObjectDetector objectDetector;
 	private UltrasonicSensor us;
 	
-	public Navigation (Odometer odometer, ObjectDetector objectDetector, UltrasonicSensor us, double wheelRadius, double wheelBase){
+	public Navigation (Odometer odometer, UltrasonicSensor us, double wheelRadius, double wheelBase){
 		this.odometer = odometer;
-		this.objectDetector = objectDetector;
 		this.us = us;
 		this.wheelRadius = wheelRadius;
 		this.wheelBase = wheelBase;
@@ -81,7 +79,7 @@ public class Navigation extends Thread {
 			rightMotor.rotate(-convertDistance(wheelRadius, distance), false);
 		}
 		
-		/*public void travelForwardWithoutPolling(double x, double y){
+		public void travelForwardWithoutPolling(double x, double y){
 
 			double xDistance = x - odometer.getX();//the distance the robot has to travel in x to get to its destination from current position.
 			double yDistance = y - odometer.getY();//the distance the robot has to travel in y to get to its destination from current position.
@@ -93,7 +91,7 @@ public class Navigation extends Thread {
 			rightMotor.rotate(convertDistance(wheelRadius, distance), false);
 		}
 		
-		*/
+		
 		
 		/**Helper method for the goForward method.
 		 * Travels to the specified coordinates.
@@ -138,7 +136,6 @@ public class Navigation extends Thread {
 			
 			leftMotor.setSpeed(0);
 			rightMotor.setSpeed(0);
-			//objectDetector.doObjectDetection();	//call object detection to do the rest
 				
 			}
 		
@@ -211,10 +208,10 @@ public class Navigation extends Thread {
 		backwards((odometer.getX()+Math.sin(Math.toRadians(odometer.getAng())) * distance),(odometer.getY()+ Math.cos(Math.toRadians(odometer.getAng())) * distance));
 		}
 		
-		/*public void goForwardWithoutPolling(double distance){
+		public void goForwardWithoutPolling(double distance){
 			travelForwardWithoutPolling(odometer.getX()+Math.sin(Math.toRadians(odometer.getAng())) * distance,odometer.getY()+ Math.cos(Math.toRadians(odometer.getAng())) * distance);
 		}
-		*/
+		
 		private int getFilteredData() {
 			int distance;
 			// do a ping

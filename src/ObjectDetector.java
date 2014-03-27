@@ -23,6 +23,8 @@ public class ObjectDetector {
 	private UltrasonicSensor us;
 	private ColorSensor colorSensor;
 	private TwoWheeledRobot robot;
+	private int correctionAngle;
+	private Navigation navigation;
 	private USPoller usPoller;
 
 	/**Constructor for ObjectDector
@@ -32,10 +34,11 @@ public class ObjectDetector {
 	 * @param usPoller the ultrasonic poller
 	 */
 	public ObjectDetector(ColorSensor colorSensor,
-			TwoWheeledRobot robot, UltrasonicSensor us) {
+			TwoWheeledRobot robot, UltrasonicSensor us, Navigation navigation) {
 		this.colorSensor = colorSensor;
 		this.robot = robot;
 		this.us =  us;
+		this.navigation = navigation;
 		object= ObjectType.NULL;
 	}
 	
@@ -117,10 +120,11 @@ public class ObjectDetector {
 			} else{
 				distance = getFilteredData();	//update distance
 			}
-			if (distance <= 15) {	//if the robot is close enough to reliably detect the object
+			if (distance <= 20) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
 				if(doObjectDetection() == flagColor ){
 					LCD.drawString("Flag     ", 0, 1);
+					computeCorrectionAngle(distance);
 					foundFlag = true;
 					break;
 
@@ -139,12 +143,21 @@ public class ObjectDetector {
 		
 	
 	
+	private void computeCorrectionAngle(int distance) {
+		correctionAngle = (int) (-distance + 35);
+		
+	}
+
 	/**
 	 * It returns what the object is.
 	 * @return the case either WALL, WOOD_BLOCK or FLAG.
 	 */
 	public ObjectType getObject(){
 		return object;
+	}
+	
+	public int getCorrectionAngle(){
+		return correctionAngle;
 	}
 	
 	private int getFilteredData() {
