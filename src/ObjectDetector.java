@@ -50,7 +50,7 @@ public class ObjectDetector {
 		int redComponent = color.getRed();
 		int greenComponent = color.getGreen();
 		
-		if(redComponent >2*blueComponent && redComponent >2*greenComponent){	//red block
+		if(redComponent >2*blueComponent && redComponent >3*greenComponent){	//red block
 			theObject = RED;
 			
 		}

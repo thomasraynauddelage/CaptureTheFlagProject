@@ -58,12 +58,12 @@ public enum Sensor {LEFT,RIGHT, NULL};
 		Sensor sensor = Sensor.NULL;
 		
 		while(!firstLineFound){
-			if (leftLightSensor.getNormalizedLightValue()<400){
+			if (leftLightSensor.getNormalizedLightValue()<435){
 				sensor = Sensor.LEFT;
 				firstLineFound = true;
 				Sound.beep();
 			}
-			else if(rightLightSensor.getNormalizedLightValue()<400){
+			else if(rightLightSensor.getNormalizedLightValue()<390){
 				sensor = Sensor.RIGHT;
 				firstLineFound = true;
 				Sound.beep();
@@ -76,7 +76,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 
 			while(!secondLineFound){
 				robot.setRightMotorSpeed(300);
-				if(rightLightSensor.getNormalizedLightValue()<400){
+				if(rightLightSensor.getNormalizedLightValue()<390){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -87,7 +87,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 
 			while(!secondLineFound){
 				robot.setLeftMotorSpeed(300);
-				if(leftLightSensor.getNormalizedLightValue()<400){
+				if(leftLightSensor.getNormalizedLightValue()<435){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -99,4 +99,58 @@ public enum Sensor {LEFT,RIGHT, NULL};
 		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 		
 	}
+	
+	public void goToNextLine(){
+		robot.setForwardSpeed(10);
+		boolean firstLineFound = false;
+
+		Sensor sensor = Sensor.NULL;
+		//try {
+		//	Thread.sleep(2200);
+		//} catch (InterruptedException e) {
+
+		while(!firstLineFound){
+			if (leftLightSensor.getNormalizedLightValue()<435){
+				sensor = Sensor.LEFT;
+				firstLineFound = true;
+				Sound.beep();
+			}
+			else if(rightLightSensor.getNormalizedLightValue()<390){
+				sensor = Sensor.RIGHT;
+				firstLineFound = true;
+				Sound.beep();
+
+			}
+		}
+		robot.setForwardSpeed(0);
+		boolean secondLineFound = false;
+		if(sensor == Sensor.LEFT){
+
+			while(!secondLineFound){
+				robot.setRightMotorSpeed(300);
+				if(rightLightSensor.getNormalizedLightValue()<390){
+					secondLineFound = true;
+					Sound.beep();
+				}
+			}
+		}
+
+		else if(sensor == Sensor.RIGHT){
+
+			while(!secondLineFound){
+				robot.setLeftMotorSpeed(300);
+				if(leftLightSensor.getNormalizedLightValue()<435){
+					secondLineFound = true;
+					Sound.beep();
+				}
+			}
+
+		}
+
+		robot.setRotationSpeed(0);
+		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
+
+
+	}
 }
+

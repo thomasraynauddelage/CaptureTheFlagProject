@@ -137,10 +137,6 @@ public class TwoWheeledRobot {
 			rightMotor.rotate(-convertAngle(wheelRadius, wheelBase, theta), false);
 			setRotationSpeed(0);
 		}
-		/**Setter for the speed of the left motor only.
-		 * 
-		 * @param speed the speed
-		 */
 		
 		public void setLeftMotorSpeed( double speed){
 		
@@ -159,10 +155,6 @@ public class TwoWheeledRobot {
 			
 		}
 		
-		/**Setter for the speed of the right motor only.
-		 * 
-		 * @param speed the speed
-		 */
 		public void setRightMotorSpeed(double speed){
 			if (speed > 0.0)
 				rightMotor.forward();
