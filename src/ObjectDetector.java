@@ -120,13 +120,33 @@ public class ObjectDetector {
 			} else{
 				distance = getFilteredData();	//update distance
 			}
-			if (distance <= 20) {	//if the robot is close enough to reliably detect the object
+			if (distance <= 32) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
-				if(doObjectDetection() == flagColor ){
 					LCD.drawString("Flag     ", 0, 1);
-					computeCorrectionAngle(distance);
-					foundFlag = true;
-					break;
+					double firstHeading = robot.getHeading();
+					//int correctionAngle = computeCorrectionAngle(distance);
+					robot.setRotationSpeed(0);
+					while(distance<=32){
+						robot.setRotationSpeed(30);
+						distance =getFilteredData();	
+					}
+					double secondHeading = robot.getHeading();
+					int angle = computeAngle(firstHeading,secondHeading);
+					robot.rotate(-angle);
+					//robot.rotate(correctionAngle);
+					navigation.goForward(15);
+					if(doObjectDetection() == flagColor ){
+						foundFlag = true;
+						break;
+					}
+					else{
+						navigation.backtrack(15);
+						while(distance <= 32)
+						{
+						robot.setRotationSpeed(30);
+						distance = getFilteredData();
+						}
+					}
 
 				} else {
 					distance = getFilteredData();	//update distance
@@ -134,18 +154,21 @@ public class ObjectDetector {
 				}
 			}
 
-		}
+		
 		robot.setSpeeds(0,0);
 		if(foundFlag){
 			capture();
 		}
 	}
 		
+	private int computeAngle(double firstHeading, double secondHeading){
+		int angle = (int)((secondHeading - firstHeading)/2);
+		return angle;
+	}
 	
-	
-	private void computeCorrectionAngle(int distance) {
-		correctionAngle = (int) (-distance + 35);
-		
+	private int computeCorrectionAngle(int distance) {
+		correctionAngle = (int) (-0.4*distance + 40);
+		return correctionAngle;
 	}
 
 	/**

@@ -57,10 +57,10 @@ public class Search {
 	 * @param yTopRight the y coordinate of the top right corner of the zone
 	 */
 	public void travelToZone(int xBottomLeft, int yBottomLeft, int xTopRight, int yTopRight){
-		//int xDestination = (xBottomLeft + xTopRight)/2;
-		//int yDestination = (yBottomLeft + yTopRight)/2;
-		int xDestination = xBottomLeft;
-		int yDestination = yBottomLeft;
+		int xDestination = (xBottomLeft + xTopRight)/2;
+		int yDestination = (yBottomLeft + yTopRight)/2;
+		//int xDestination = xBottomLeft;
+		//int yDestination = yBottomLeft;
 		if(y < yDestination){	//if the y position of the robot is not the final y position 
 			if(getFilteredData() > 40){		//if there is not obstacle in the y direction
 				tll.goToNextLine();	//go forward one tile in y
@@ -89,6 +89,7 @@ public class Search {
 						tll.goToNextLine();	// go forward one tile in x
 						x++;	// increment x tile counter
 						odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});	//correct odometry
+						robot.rotate(-90);
 						travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);	// recursive call
 
 					}
@@ -129,6 +130,7 @@ public class Search {
 				tll.goToNextLine();
 				x++;
 				odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
+				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
 				
 
@@ -143,6 +145,7 @@ public class Search {
 					tll.goToNextLine();
 					x++;
 					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
+					robot.rotate(-90);
 					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
 				}
 				else{
@@ -175,9 +178,9 @@ public class Search {
 		else{	//navigation is done
 			Sound.beep();
 		}
-		tll.goToNextLine();
-		robot.rotate(90);
-		tll.goToNextLine();
+		//tll.goToNextLine();
+		//robot.rotate(-90);
+		//tll.goToNextLine();
 	}
 
 	
@@ -188,17 +191,28 @@ public class Search {
 	public void doSearch(){
 		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-			robot.rotate(objectDetector.getCorrectionAngle());
-			navigation.backtrack(15);
+			//robot.rotate(objectDetector.getCorrectionAngle());
+			navigation.backtrack(10);
 			robot.rotate(180);
-			clawMotor.rotate(-500);
-			navigation.backtrack(20);
+			clawMotor.rotate(-600);
+			navigation.backtrack(15);
 			clawMotor.rotate(500);
 
 
 		}
-		else{
-
+		if(!objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
+			
+			tll.goToNextLine();
+			objectDetector.rotateAndPoll(flagColor);
+			if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
+				//robot.rotate(objectDetector.getCorrectionAngle());
+				navigation.backtrack(10);
+				robot.rotate(180);
+				clawMotor.rotate(-600);
+				navigation.backtrack(15);
+				clawMotor.rotate(500);
+		}
+		else{}
 		}
 
 	}
