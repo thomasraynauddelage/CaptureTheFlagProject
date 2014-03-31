@@ -104,7 +104,7 @@ public class ObjectDetector {
 	 */
 	public void rotateAndPoll(int flagColor){
 		double heading = robot.getHeading();	//get the initial heading of the robot
-		
+		double distanceToObject =0;
 		boolean foundFlag = false;
 		while (true) {
 			int distance = getFilteredData();
@@ -122,25 +122,33 @@ public class ObjectDetector {
 			}
 			if (distance <= 32) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
-					LCD.drawString("Flag     ", 0, 1);
 					double firstHeading = robot.getHeading();
+					if(distance > 10){
+					distanceToObject =getFilteredData()-10;
+					}
 					//int correctionAngle = computeCorrectionAngle(distance);
-					robot.setRotationSpeed(0);
-					while(distance<=32){
-						robot.setRotationSpeed(30);
-						distance =getFilteredData();	
+					//robot.setRotationSpeed(0);
+					while(distance <= 32){
+						//robot.setRotationSpeed(30);
+						distance =getFilteredData();
 					}
 					double secondHeading = robot.getHeading();
 					int angle = computeAngle(firstHeading,secondHeading);
 					robot.rotate(-angle);
 					//robot.rotate(correctionAngle);
-					navigation.goForward(15);
+					//if(distance > 10){
+					navigation.goForwardWithoutPolling(distanceToObject);
+					//}
 					if(doObjectDetection() == flagColor ){
+						LCD.drawString("Flag     ", 0, 1);
 						foundFlag = true;
 						break;
 					}
 					else{
-						navigation.backtrack(15);
+						//if(distance>10){
+							navigation.backtrack(distanceToObject);
+						//}
+							distance = getFilteredData();
 						while(distance <= 32)
 						{
 						robot.setRotationSpeed(30);

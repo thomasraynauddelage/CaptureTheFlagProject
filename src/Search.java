@@ -57,132 +57,131 @@ public class Search {
 	 * @param yTopRight the y coordinate of the top right corner of the zone
 	 */
 	public void travelToZone(int xBottomLeft, int yBottomLeft, int xTopRight, int yTopRight){
-		int xDestination = (xBottomLeft + xTopRight)/2;
-		int yDestination = (yBottomLeft + yTopRight)/2;
-		//int xDestination = xBottomLeft;
-		//int yDestination = yBottomLeft;
-		if(y < yDestination){	//if the y position of the robot is not the final y position 
-			if(getFilteredData() > 40){		//if there is not obstacle in the y direction
-				tll.goToNextLine();	//go forward one tile in y
-				y++;	//increment y tile counter
-				odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});	//correct odometry
-				robot.rotate(90);	//rotate to face positive x direction
-
-				if(x < xDestination && getFilteredData() > 40){	//if the x position of the robot is not the final x position and there is no obstacle 
-					tll.goToNextLine();	//go forward one tile in x
-					x++;	// increment x tile counter
-					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});	//correct odometry
-					robot.rotate(-90);	//rotate to face positive y direction
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);	//recursive call
-				}
-				else if (x< xDestination){	//if the x position of the robot is not the final x position but there is an obstacle
-					if(y< yDestination){	//if the y position of the robot is not the final y position
-						robot.rotate(-90);	//rotate to face positive y direction
-						travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);	//recursive call
-					}
-					else{	//if the y position of the robot is the final y position
-						robot.rotate(90);	// rotate to face negative y direction
-						tll.goToNextLine();	//go forward - one tile in y
-						y--;	// decrement y tile counter
-						odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});	//correct odometry
-						robot.rotate(-90);	//rotate to face positive y direction
-						tll.goToNextLine();	// go forward one tile in x
-						x++;	// increment x tile counter
-						odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});	//correct odometry
-						robot.rotate(-90);
-						travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);	// recursive call
-
-					}
-				}
-				else{	//if the x position of the robot is the final x position
-					robot.rotate(-90);	//rotate to face positive y direction
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);	//recursive call
-				}
-
-			}
-			else{
-				robot.rotate(90);	//rotate to face positive x direction
-				if(x< xDestination && getFilteredData() >40){	//if the x position of the robot is not the final x position and there is no obstacle
-					tll.goToNextLine();		//
-					x++;
-					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
-					robot.rotate(-90);
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
-				}
-				else if( x< xDestination){
-					robot.rotate(90);
-					tll.goToNextLine();
-					y--;
-					odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});
-					robot.rotate(-90);
-					tll.goToNextLine();
-					x++;
-					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
-					robot.rotate(-90);
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
-				}
-
-			}
-		}
-		else if(x < xDestination){
+		int xDestination = xBottomLeft;
+		int yDestination = yBottomLeft;
+		if(!isObstacle() && !yReachedMax(yDestination)){
+			goForwardY();
 			robot.rotate(90);
-			if(getFilteredData() > 40){
-				tll.goToNextLine();
-				x++;
-				odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
+			if(!isObstacle() && !xReachedMax(xDestination)){
+				goForwardX();
 				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
-				
-
 			}
 			else{
-				robot.rotate(90);
-				if(getFilteredData() > 40){
-					tll.goToNextLine();
-					y--;
-					odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});
-					robot.rotate(-90);
-					tll.goToNextLine();
-					x++;
-					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
-					robot.rotate(-90);
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
-				}
-				else{
-					robot.rotate(90);
-					tll.goToNextLine();
-					x--;
-					odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 0.0}, new boolean [] {true, false, false});
-					robot.rotate(-90);
-					tll.goToNextLine();
-					y--;
-					odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});
-					robot.rotate(-90);
-					if(getFilteredData() < 40){
-						robot.rotate(90);
-						tll.goToNextLine();
-						y--;
-						odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0.0}, new boolean [] {false, true, false});
-					}
-
-					robot.rotate(-90);
-					tll.goToNextLine();
-					x++;
-					robot.rotate(-90);
-					travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
-
-				}
-
+				robot.rotate(-90);
+				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
 			}
 		}
-		else{	//navigation is done
-			Sound.beep();
+		else if(!yReachedMax(yDestination)){
+			robot.rotate(90);
+			if(!isObstacle() && !xReachedMax(xDestination)){
+				goForwardX();
+				robot.rotate(-90);
+				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+			}
+			else if (!xReachedMax(xDestination)){
+				boolean obstacle = true;
+				while(obstacle){
+					robot.rotate(90);
+					goBackwardY();
+					robot.rotate(-90);
+					obstacle = isObstacle();
+				}
+				goForwardX();
+				robot.rotate(-90);
+				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+			}
 		}
-		//tll.goToNextLine();
-		//robot.rotate(-90);
-		//tll.goToNextLine();
+		else if(!xReachedMax(xDestination)){
+			robot.rotate(90);
+			if(!isObstacle()){
+				goForwardX();
+				robot.rotate(-90);
+				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+			}
+			else if(!yReachedMax(yDestination)){
+				robot.rotate(-90);
+				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+			}       
+		}
+	}
+	
+	/**Helper method for travelToZone.
+	 * Goes forward x, updates the x tile counter and corrects the odometry.
+	 * 
+	 */
+	public void goForwardX(){
+		tll.goToNextLine();	//go forward one tile in x
+		x++;	// increment x tile counter
+		odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 90}, new boolean [] {true, false, true});	//correct odometry
+	}
+	
+	/**Helper method for travelToZone.
+	 * Goes forward y, updates the y tile counter and corrects the odometry.
+	 * 
+	 */
+	public void goForwardY(){
+		tll.goToNextLine();	//go forward one tile in y
+		y++;	//increment y tile counter
+		odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE, 0}, new boolean [] {false, true, true});	//correct odometry
+	}
+	
+	/**Helper method for travelToZone.
+	 * Goes backward x, updates the x tile counter and corrects the odometry.
+	 * 
+	 */
+	public void goBackwardX(){
+		tll.goToNextLine();	//go backward one tile in x
+		x--;	// decrement x tile counter
+		odometer.setPosition(new double [] {x*TILE_DISTANCE, 0.0 , 270}, new boolean [] {true, false, true});	//correct odometry
+	}
+	
+	/**Helper method for travelToZone.
+	 * Goes backward y, updates the y tile counter and corrects the odometry.
+	 * 
+	 */
+	public void goBackwardY(){
+		tll.goToNextLine();	//go backward one tile in y
+		y--;	// decrement y tile counter
+		odometer.setPosition(new double [] {0.0, y*TILE_DISTANCE , 180}, new boolean [] {false, true, true});	//correct odometry
 	}
 
+	/**Checks if there is an object at less than 40 cm.
+	 * 
+	 * @return a boolean (true if obstacle, false otherwise)
+	 */
+	public boolean isObstacle(){
+		if(getFilteredData() < 40){
+			return true;
+		}
+		else return false;
+	}
+	
+	/**Checks if the robot has reached its final x destination.
+	 * 
+	 * @param xDestination the final x destination.
+	 * @return a boolean (true if the final x destination has been reached, false otherwise)
+	 */
+	public boolean xReachedMax(int xDestination){
+		if (x == xDestination){
+			return true;
+		}
+		else return false;
+	}
+	
+	/**Checks if the robot has reached its final y destination.
+	 * 
+	 * @param yDestination the final y destination
+	 * @return a boolean (true if the final y destination is reached, false otherwise)
+	 */
+	public boolean yReachedMax(int yDestination){
+		if (y == yDestination){
+			return true;
+		}
+		else return false;
+	}
+	
+	
 	
 
 	/**
@@ -192,29 +191,38 @@ public class Search {
 		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
 			//robot.rotate(objectDetector.getCorrectionAngle());
-			navigation.backtrack(10);
+			navigation.backtrack(20);
 			robot.rotate(180);
 			clawMotor.rotate(-600);
-			navigation.backtrack(15);
+			navigation.backtrack(25);
+			//     robot.rotate(-30);
+			//robot.rotate(30);
 			clawMotor.rotate(500);
 
 
 		}
 		if(!objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
 			
-			tll.goToNextLine();
+			navigation.goForward(TILE_DISTANCE);
 			objectDetector.rotateAndPoll(flagColor);
 			if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
 				//robot.rotate(objectDetector.getCorrectionAngle());
-				navigation.backtrack(10);
+				navigation.backtrack(20);
 				robot.rotate(180);
 				clawMotor.rotate(-600);
-				navigation.backtrack(15);
+				navigation.backtrack(25);
+				//robot.rotate(-30);
+				//robot.rotate(30);
 				clawMotor.rotate(500);
 		}
 		else{}
 		}
 
+	}
+	
+	public void travelToDropOff(int x, int y){
+		
+		
 	}
 
 		

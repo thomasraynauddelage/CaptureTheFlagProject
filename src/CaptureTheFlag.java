@@ -24,7 +24,7 @@ public class CaptureTheFlag {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-BluetoothConnection conn = new BluetoothConnection();
+/*BluetoothConnection conn = new BluetoothConnection();
 		
 		// as of this point the bluetooth connection is closed again, and you can pair to another NXT (or PC) if you wish
 		
@@ -51,16 +51,16 @@ BluetoothConnection conn = new BluetoothConnection();
 		}
 		// stall until user decides to end program
 		//Button.ESCAPE.waitForPress();
-	
-
+	*/
+      
 		
 		int buttonChoice;
-		int flagColor=t.greenFlag;
+		//int flagColor=t.greenFlag;
+		int flagColor = 3;
+		
 		ColorSensor aLightSensor = new ColorSensor(SensorPort.S1);
 		ColorSensor bLightSensor = new ColorSensor(SensorPort.S2);
 		UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(SensorPort.S4);
-		//USPoller usPollerBottom = new USPoller(topUltrasonicSensor);
-		USPoller usPollerTop = new USPoller(ultrasonicSensor);
 		ColorSensor flagDetector = new ColorSensor(SensorPort.S3);
 		TwoWheeledRobot robot = new TwoWheeledRobot(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_BASE);
 		Odometer odometer = new Odometer(robot, true);
@@ -72,14 +72,16 @@ BluetoothConnection conn = new BluetoothConnection();
 				//&& buttonChoice != Button.ID_RIGHT);
 			
 			//if (buttonChoice == Button.ID_LEFT) { 
-			
+				LCDInfo lcd = new LCDInfo(odometer);
 				USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
 				usLocalizer.doUSLocalization();
 				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer, navigation);
 				tll.doLightLocalization();
 				Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor, tll);
-				search.travelToZone(t.greenZoneLL_X, t.greenZoneLL_Y, t.greenZoneUR_X, t.greenZoneUR_Y);
+				search.travelToZone(4, 4, 6, 6);
+				//search.travelToZone(t.greenZoneLL_X, t.greenZoneLL_Y, t.greenZoneUR_X, t.greenZoneUR_Y);
 				search.doSearch();
+				//search.travelToDropOff(t.greenDZone_X,t.greenDZone_X);
 			}
 
 }
