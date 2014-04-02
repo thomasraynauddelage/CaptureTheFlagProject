@@ -1,4 +1,5 @@
 import lejos.nxt.ColorSensor;
+import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 
@@ -59,11 +60,13 @@ public enum Sensor {LEFT,RIGHT, NULL};
 		
 		while(!firstLineFound){
 			if (leftLightSensor.getNormalizedLightValue()<435){
+			//if(leftSensorFoundLine()){
 				sensor = Sensor.LEFT;
 				firstLineFound = true;
 				Sound.beep();
 			}
 			else if(rightLightSensor.getNormalizedLightValue()<390){
+			//else if(rightSensorFoundLine()){
 				sensor = Sensor.RIGHT;
 				firstLineFound = true;
 				Sound.beep();
@@ -77,6 +80,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 			while(!secondLineFound){
 				robot.setRightMotorSpeed(300);
 				if(rightLightSensor.getNormalizedLightValue()<390){
+				//if(rightSensorFoundLine()){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -88,6 +92,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 			while(!secondLineFound){
 				robot.setLeftMotorSpeed(300);
 				if(leftLightSensor.getNormalizedLightValue()<435){
+				//if(leftSensorFoundLine()){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -111,11 +116,13 @@ public enum Sensor {LEFT,RIGHT, NULL};
 
 		while(!firstLineFound){
 			if (leftLightSensor.getNormalizedLightValue()<435){
+			//if(leftSensorFoundLine()){
 				sensor = Sensor.LEFT;
 				firstLineFound = true;
 				Sound.beep();
 			}
 			else if(rightLightSensor.getNormalizedLightValue()<390){
+			//else if (rightSensorFoundLine()){
 				sensor = Sensor.RIGHT;
 				firstLineFound = true;
 				Sound.beep();
@@ -129,6 +136,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 			while(!secondLineFound){
 				robot.setRightMotorSpeed(300);
 				if(rightLightSensor.getNormalizedLightValue()<390){
+				//if(rightSensorFoundLine()){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -141,6 +149,7 @@ public enum Sensor {LEFT,RIGHT, NULL};
 			while(!secondLineFound){
 				robot.setLeftMotorSpeed(300);
 				if(leftLightSensor.getNormalizedLightValue()<435){
+				//if(leftSensorFoundLine()){
 					secondLineFound = true;
 					Sound.beep();
 				}
@@ -151,6 +160,33 @@ public enum Sensor {LEFT,RIGHT, NULL};
 		navigation.goForward(LIGHT_SENSOR_TO_AXLE_TRACK);
 
 
+	}
+	
+	public boolean leftSensorFoundLine(){
+		boolean found = false;
+		int lightValues[] = new int [2];
+		for(int i = 0; i <2 ; i++){
+			lightValues[i] = leftLightSensor.getNormalizedLightValue();	
+			LCD.drawString(""+i+": "+ lightValues[i], 0, i +3);
+			
+		}
+		if(lightValues[0] - lightValues[1] < -4){
+			found = true;
+		}
+		return found;
+	}
+	
+	
+	public boolean rightSensorFoundLine(){
+		boolean found = false;
+		int lightValues[] = new int [2];
+		for(int i = 0; i < 2; i++){
+			lightValues[i] = rightLightSensor.getNormalizedLightValue();	
+		}
+		if(lightValues[0] - lightValues[1] < -4){
+			found = true;
+		}
+		return found;
 	}
 }
 

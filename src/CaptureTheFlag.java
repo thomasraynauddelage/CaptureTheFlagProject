@@ -78,9 +78,9 @@ public class CaptureTheFlag {
 				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer, navigation);
 				tll.doLightLocalization();
 				Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor, tll);
-				search.travelToZone(4, 4, 6, 6);
+				search.travelToZone(4, 4);
 				//search.travelToZone(t.greenZoneLL_X, t.greenZoneLL_Y, t.greenZoneUR_X, t.greenZoneUR_Y);
-				search.doSearch();
+				search.doSearch(4,4,7,6);
 				//search.travelToDropOff(t.greenDZone_X,t.greenDZone_X);
 			}
 

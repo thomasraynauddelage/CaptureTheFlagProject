@@ -53,10 +53,8 @@ public class Search {
 	 * 
 	 * @param xBottomLeft the x coordinate of the bottom left corner of the zone
 	 * @param yBottomLeft the y coordinate of the bottom left corner of the zone
-	 * @param xTopRight the x coordinate of the top right corner of the zone 
-	 * @param yTopRight the y coordinate of the top right corner of the zone
 	 */
-	public void travelToZone(int xBottomLeft, int yBottomLeft, int xTopRight, int yTopRight){
+	public void travelToZone(int xBottomLeft, int yBottomLeft){
 		int xDestination = xBottomLeft;
 		int yDestination = yBottomLeft;
 		if(!isObstacle() && !yReachedMax(yDestination)){
@@ -65,11 +63,11 @@ public class Search {
 			if(!isObstacle() && !xReachedMax(xDestination)){
 				goForwardX();
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else{
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}
 		}
 		else if(!yReachedMax(yDestination)){
@@ -77,7 +75,7 @@ public class Search {
 			if(!isObstacle() && !xReachedMax(xDestination)){
 				goForwardX();
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else if (!xReachedMax(xDestination)){
 				boolean obstacle = true;
@@ -89,7 +87,7 @@ public class Search {
 				}
 				goForwardX();
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}
 		}
 		else if(!xReachedMax(xDestination)){
@@ -97,11 +95,11 @@ public class Search {
 			if(!isObstacle()){
 				goForwardX();
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else if(!yReachedMax(yDestination)){
 				robot.rotate(-90);
-				travelToZone(xBottomLeft, yBottomLeft, xTopRight, yTopRight);
+				travelToZone(xBottomLeft, yBottomLeft);
 			}       
 		}
 	}
@@ -184,40 +182,46 @@ public class Search {
 	
 	
 
-	/**
-	 * Performs the search. 
+	/**Performs the search once the zone is reached.
+	 * 
+	 * @param xBottomLeft
+	 * @param yBottomLeft
+	 * @param xTopRight
+	 * @param yTopRight
 	 */
-	public void doSearch(){
+	public void doSearch(int xBottomLeft, int yBottomLeft, int xTopRight, int yTopRight){
+		int xChecks = xTopRight - xBottomLeft -1;
+		int yChecks = yTopRight - yBottomLeft -1;
+		robot.rotate(90);
+		navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		xChecks --;
+		robot.rotate(-90);
+		navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		yChecks --;
 		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-			//robot.rotate(objectDetector.getCorrectionAngle());
 			navigation.backtrack(20);
 			robot.rotate(180);
 			clawMotor.rotate(-600);
 			navigation.backtrack(25);
-			//     robot.rotate(-30);
-			//robot.rotate(30);
 			clawMotor.rotate(500);
-
-
 		}
-		if(!objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-			
-			navigation.goForward(TILE_DISTANCE);
-			objectDetector.rotateAndPoll(flagColor);
-			if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-				//robot.rotate(objectDetector.getCorrectionAngle());
-				navigation.backtrack(20);
-				robot.rotate(180);
-				clawMotor.rotate(-600);
-				navigation.backtrack(25);
-				//robot.rotate(-30);
-				//robot.rotate(30);
-				clawMotor.rotate(500);
+		else {
+			while (xChecks !=0 || yChecks !=0){
+				if(yChecks != 0){
+					navigation.goForwardWithoutPolling(TILE_DISTANCE);
+					yChecks --;
+					objectDetector.rotateAndPoll(flagColor);
+					if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
+						navigation.backtrack(20);
+						robot.rotate(180);
+						clawMotor.rotate(-600);
+						navigation.backtrack(25);
+						clawMotor.rotate(500);
+					}
+				}
+			}
 		}
-		else{}
-		}
-
 	}
 	
 	public void travelToDropOff(int x, int y){
