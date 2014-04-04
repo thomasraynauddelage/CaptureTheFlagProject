@@ -5,7 +5,7 @@ import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 
 /**
- * Takes care of searching for the flag once we are in the opponent's zone and capturing once it is found.
+ * Takes care of traveling to the zone and then searching for the flag once we are in the opponent's zone and capturing once it is found.
  *
  *
  */
@@ -57,20 +57,24 @@ public class Search {
 	public void travelToZone(int xBottomLeft, int yBottomLeft){
 		int xDestination = xBottomLeft;
 		int yDestination = yBottomLeft;
+	
 		if(!isObstacle() && !yReachedMax(yDestination)){
 			goForwardY();
 			robot.rotate(90);
 			if(!isObstacle() && !xReachedMax(xDestination)){
+				tll.goBackwardAndAlign();
 				goForwardX();
 				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else{
+				tll.goBackwardAndAlign();   
 				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 		}
 		else if(!yReachedMax(yDestination)){
+			tll.goBackwardAndAlign();
 			robot.rotate(90);
 			if(!isObstacle() && !xReachedMax(xDestination)){
 				goForwardX();
@@ -89,16 +93,23 @@ public class Search {
 				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
+			else{
+				robot.rotate(-90);
+				goBackwardX();
+				robot.rotate(90);
+				travelToZone(xBottomLeft, yBottomLeft);
+			}
 		}
 		else if(!xReachedMax(xDestination)){
 			robot.rotate(90);
+			tll.goBackwardAndAlign();
 			if(!isObstacle()){
 				goForwardX();
 				robot.rotate(-90);
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else if(!yReachedMax(yDestination)){
-				robot.rotate(-90);
+				robot.rotate(-180);
 				travelToZone(xBottomLeft, yBottomLeft);
 			}       
 		}
@@ -193,10 +204,12 @@ public class Search {
 		int xChecks = xTopRight - xBottomLeft -1;
 		int yChecks = yTopRight - yBottomLeft -1;
 		robot.rotate(90);
-		navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		//navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		tll.goToNextLine();
 		xChecks --;
 		robot.rotate(-90);
-		navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		//navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		tll.goToNextLine();
 		yChecks --;
 		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
@@ -205,11 +218,17 @@ public class Search {
 			clawMotor.rotate(-600);
 			navigation.backtrack(25);
 			clawMotor.rotate(500);
+			robot.rotate(180);
+			navigation.backtrack(5);
 		}
 		else {
 			while (xChecks !=0 || yChecks !=0){
 				if(yChecks != 0){
-					navigation.goForwardWithoutPolling(TILE_DISTANCE);
+					//navigation.goForwardWithoutPolling(TILE_DISTANCE);
+					robot.setForwardSpeed(5);
+					//navigation.goForwardWithoutPolling(3);
+					tll.goBackwardAndAlign();
+					tll.goToNextLine();
 					yChecks --;
 					objectDetector.rotateAndPoll(flagColor);
 					if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
@@ -218,14 +237,19 @@ public class Search {
 						clawMotor.rotate(-600);
 						navigation.backtrack(25);
 						clawMotor.rotate(500);
+						robot.rotate(180);
+						navigation.backtrack(5);
 					}
 				}
 			}
+			robot.setForwardSpeed(5);
+			//navigation.goForwardWithoutPolling(3);
+			tll.goBackwardAndAlign();
 		}
 	}
 	
 	public void travelToDropOff(int x, int y){
-		
+	
 		
 	}
 

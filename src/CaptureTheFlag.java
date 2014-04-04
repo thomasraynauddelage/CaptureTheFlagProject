@@ -73,14 +73,14 @@ public class CaptureTheFlag {
 			
 			//if (buttonChoice == Button.ID_LEFT) { 
 				LCDInfo lcd = new LCDInfo(odometer);
-				USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
-				usLocalizer.doUSLocalization();
+				//USLocalizer usLocalizer = new USLocalizer(odometer, ultrasonicSensor);
+				//usLocalizer.doUSLocalization();
 				TwoLightsLocalizer tll = new TwoLightsLocalizer(robot,aLightSensor,bLightSensor, odometer, navigation);
-				tll.doLightLocalization();
+				//tll.doLightLocalization();
 				Search search = new Search(navigation, odometer, robot, objectDetector, Motor.C, ultrasonicSensor, flagColor, tll);
-				search.travelToZone(4, 4);
+				//search.travelToZone(4, 4);
 				//search.travelToZone(t.greenZoneLL_X, t.greenZoneLL_Y, t.greenZoneUR_X, t.greenZoneUR_Y);
-				search.doSearch(4,4,7,6);
+				search.doSearch(4,4,6,7);
 				//search.travelToDropOff(t.greenDZone_X,t.greenDZone_X);
 			}
 

@@ -1,6 +1,7 @@
 import lejos.nxt.ColorSensor;
 import lejos.nxt.LCD;
 import lejos.nxt.ColorSensor.Color;
+import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 
 /**
@@ -73,8 +74,11 @@ public class ObjectDetector {
 		else if(blueComponent> redComponent){		//light blue block 
 			theObject = LIGHT_BLUE;
 		}
-		else{	//white block
+		else if (redComponent >0.85*blueComponent && redComponent< 1.15*blueComponent && greenComponent >0.85*blueComponent && greenComponent < 1.15*blueComponent){	//white block
 			theObject = WHITE;
+		}
+		else{
+			theObject = -1;
 		}
 		
 		return theObject;
@@ -104,7 +108,6 @@ public class ObjectDetector {
 	 */
 	public void rotateAndPoll(int flagColor){
 		double heading = robot.getHeading();	//get the initial heading of the robot
-		double distanceToObject =0;
 		boolean foundFlag = false;
 		while (true) {
 			int distance = getFilteredData();
@@ -122,62 +125,53 @@ public class ObjectDetector {
 			}
 			if (distance <= 32) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
-					double firstHeading = robot.getHeading();
-					if(distance > 10){
+				double firstHeading = robot.getHeading();
+				double distanceToObject =0;
+				//int correctionAngle = computeCorrectionAngle(distance);
+				//robot.setRotationSpeed(0);
+				while(distance <= 32){
+					//robot.setRotationSpeed(30);
+					distance =getFilteredData();
+				}
+				double secondHeading = robot.getHeading();
+				int angle = computeAngle(firstHeading,secondHeading);
+				robot.rotate(-angle);
+				if(distance > 10){
 					distanceToObject =getFilteredData()-10;
-					}
-					//int correctionAngle = computeCorrectionAngle(distance);
-					//robot.setRotationSpeed(0);
-					while(distance <= 32){
-						//robot.setRotationSpeed(30);
-						distance =getFilteredData();
-					}
-					double secondHeading = robot.getHeading();
-					int angle = computeAngle(firstHeading,secondHeading);
-					robot.rotate(-angle);
-					//robot.rotate(correctionAngle);
-					//if(distance > 10){
-					navigation.goForwardWithoutPolling(distanceToObject);
-					//}
-					if(doObjectDetection() == flagColor ){
-						LCD.drawString("Flag     ", 0, 1);
-						foundFlag = true;
-						break;
-					}
-					else{
-						//if(distance>10){
-							navigation.backtrack(distanceToObject);
-						//}
-							distance = getFilteredData();
-						while(distance <= 32)
-						{
+				}
+				navigation.goForwardWithoutPolling(distanceToObject);
+				if(doObjectDetection() == flagColor ){
+					LCD.drawString("Flag     ", 0, 1);
+					foundFlag = true;
+					break;
+				}
+				else{
+					navigation.backtrack(distanceToObject);
+					distance = getFilteredData();
+					while(distance <= 32)
+					{
 						robot.setRotationSpeed(30);
 						distance = getFilteredData();
-						}
 					}
-
-				} else {
-					distance = getFilteredData();	//update distance
-
 				}
-			}
 
-		
+			} else {
+				distance = getFilteredData();	//update distance
+
+			}
+		}
+
 		robot.setSpeeds(0,0);
 		if(foundFlag){
 			capture();
 		}
 	}
-		
+
 	private int computeAngle(double firstHeading, double secondHeading){
 		int angle = (int)((secondHeading - firstHeading)/2);
 		return angle;
 	}
 	
-	private int computeCorrectionAngle(int distance) {
-		correctionAngle = (int) (-0.4*distance + 40);
-		return correctionAngle;
-	}
 
 	/**
 	 * It returns what the object is.
