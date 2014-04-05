@@ -220,6 +220,9 @@ public class Search {
 			clawMotor.rotate(500);
 			robot.rotate(180);
 			navigation.backtrack(5);
+			navigation.backtrack(objectDetector.getDistanceToObject());  
+			navigation.turnTo(Odometer.minimumAngleFromTo(odometer.getAng(), 0));
+
 		}
 		else {
 			while (xChecks !=0 || yChecks !=0){
@@ -239,9 +242,12 @@ public class Search {
 						clawMotor.rotate(500);
 						robot.rotate(180);
 						navigation.backtrack(5);
+						navigation.backtrack(objectDetector.getDistanceToObject());
+						navigation.turnTo(Odometer.minimumAngleFromTo(odometer.getAng(), 0));
 					}
 				}
 			}
+
 			robot.setForwardSpeed(5);
 			//navigation.goForwardWithoutPolling(3);
 			tll.goBackwardAndAlign();

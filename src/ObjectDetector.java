@@ -25,6 +25,8 @@ public class ObjectDetector {
 	private ColorSensor colorSensor;
 	private TwoWheeledRobot robot;
 	private int correctionAngle;
+	private int distanceToObject;
+	private double initialHeading;
 	private Navigation navigation;
 	private USPoller usPoller;
 
@@ -107,7 +109,7 @@ public class ObjectDetector {
 	 * otherwise the robot travels to the other side and rotate and polls again. Takes an int representing the color of the flag as input.
 	 */
 	public void rotateAndPoll(int flagColor){
-		double heading = robot.getHeading();	//get the initial heading of the robot
+		initialHeading = robot.getHeading();//get the initial heading of the robot
 		boolean foundFlag = false;
 		while (true) {
 			int distance = getFilteredData();
@@ -117,7 +119,7 @@ public class ObjectDetector {
 			LCD.drawString("          ", 0, 1);
 
 			robot.setRotationSpeed(30);
-			if (robot.getHeading() - heading >= 360) {	//if the robot has rotated and polled 360 degrees
+			if (robot.getHeading() - initialHeading >= 360) {	//if the robot has rotated and polled 360 degrees
 				//LCD.drawString("Angle f   " + (robot.getHeading() - heading), 0, 2);
 				break;
 			} else{
@@ -126,7 +128,7 @@ public class ObjectDetector {
 			if (distance <= 32) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
 				double firstHeading = robot.getHeading();
-				double distanceToObject =0;
+				 distanceToObject =0;
 				//int correctionAngle = computeCorrectionAngle(distance);
 				//robot.setRotationSpeed(0);
 				while(distance <= 32){
@@ -181,8 +183,8 @@ public class ObjectDetector {
 		return object;
 	}
 	
-	public int getCorrectionAngle(){
-		return correctionAngle;
+	public int getDistanceToObject(){
+		return distanceToObject;
 	}
 	
 	private int getFilteredData() {

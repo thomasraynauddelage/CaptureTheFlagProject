@@ -63,7 +63,7 @@ private int rightThird;
 		odometer.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
 	}  
 	
-	/**The robot moves forward until one of the light sensors catches a line. When it does it rotates until the other light sensor finds catches the line.
+	/**The robot goes forward until one of the light sensors catches a line. When it does it rotates until the other light sensor finds catches the line.
 	 * 
 	 */
 	public void goForwardAndAlign(){
@@ -175,9 +175,6 @@ private int rightThird;
 
 	}
 	
-	/**The robot moves backward until one of the light sensors catches a line. When it does it rotates until the other light sensor finds catches the line.
-	 * 
-	 */
 	public void goBackwardAndAlign(){
 		robot.setForwardSpeed(-10);
 		boolean firstLineFound = false;
