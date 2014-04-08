@@ -125,13 +125,13 @@ public class ObjectDetector {
 			} else{
 				distance = getFilteredData();	//update distance
 			}
-			if (distance <= 32) {	//if the robot is close enough to reliably detect the object
+			if (distance <= 23) {	//if the robot is close enough to reliably detect the object
 				LCD.drawString("Object Detected   ", 0, 0);
 				double firstHeading = robot.getHeading();
 				 distanceToObject =0;
 				//int correctionAngle = computeCorrectionAngle(distance);
 				//robot.setRotationSpeed(0);
-				while(distance <= 32){
+				while(distance <= 23){
 					//robot.setRotationSpeed(30);
 					distance =getFilteredData();
 				}
@@ -150,7 +150,7 @@ public class ObjectDetector {
 				else{
 					navigation.backtrack(distanceToObject);
 					distance = getFilteredData();
-					while(distance <= 32)
+					while(distance <= 23)
 					{
 						robot.setRotationSpeed(30);
 						distance = getFilteredData();

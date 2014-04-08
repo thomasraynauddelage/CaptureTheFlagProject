@@ -27,6 +27,8 @@ public class Search {
 	private TwoLightsLocalizer tll;
 	private int y = 0;	// y increment
 	private int x = 0;	//x increment
+	private int xPositionInZone = 0;
+	private int yPositionInZone = 0;
 	
 	
 	/**Constructor for the Search.
@@ -57,64 +59,84 @@ public class Search {
 	public void travelToZone(int xBottomLeft, int yBottomLeft){
 		int xDestination = xBottomLeft;
 		int yDestination = yBottomLeft;
-	
+
 		if(!isObstacle() && !yReachedMax(yDestination)){
 			goForwardY();
-			robot.rotate(90);
+			robot.rotate(90); //x positive
+			tll.goBackwardAndAlign();
 			if(!isObstacle() && !xReachedMax(xDestination)){
-				tll.goBackwardAndAlign();
 				goForwardX();
-				robot.rotate(-90);
+				robot.rotate(-90); // y positive
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
-			else{
-				tll.goBackwardAndAlign();   
-				robot.rotate(-90);
+			else{   
+				robot.rotate(-90);	// y positive
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 		}
 		else if(!yReachedMax(yDestination)){
+			//tll.goBackwardAndAlign();
+			robot.rotate(90);	// x positive
 			tll.goBackwardAndAlign();
-			robot.rotate(90);
 			if(!isObstacle() && !xReachedMax(xDestination)){
 				goForwardX();
-				robot.rotate(-90);
+				robot.rotate(-90);	//y positive
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else if (!xReachedMax(xDestination)){
 				boolean obstacle = true;
 				while(obstacle){
-					robot.rotate(90);
+					robot.rotate(90); // y negative
 					goBackwardY();
-					robot.rotate(-90);
-					obstacle = isObstacle();
+					robot.rotate(-90);	// x positive
+					tll.goBackwardAndAlign();
+					obstacle = isObstacle();	
 				}
 				goForwardX();
-				robot.rotate(-90);
+				robot.rotate(-90);	// y positive
+				tll.goBackwardAndAlign();
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 			else{
-				robot.rotate(-90);
-				goBackwardX();
-				robot.rotate(90);
+				robot.rotate(-90); // y positive
+				tll.goBackwardAndAlign();
+				boolean obstacle = true;
+				while(obstacle){
+					robot.rotate(-90);	//x negative
+					goBackwardX();
+					robot.rotate(90);//y positive
+					tll.goBackwardAndAlign();
+					obstacle = isObstacle();
+				}
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
 		}
 		else if(!xReachedMax(xDestination)){
-			robot.rotate(90);
+			robot.rotate(90);	// positive x
 			tll.goBackwardAndAlign();
 			if(!isObstacle()){
 				goForwardX();
-				robot.rotate(-90);
+				robot.rotate(-90); //positive y
+				tll.goBackwardAndAlign();
 				travelToZone(xBottomLeft, yBottomLeft);
 			}
-			else if(!yReachedMax(yDestination)){
-				robot.rotate(-180);
+			else{
+				boolean obstacle = true;
+				while(obstacle){
+					robot.rotate(90);	//negative y
+					goBackwardY();
+					robot.rotate(-90);	// positive x
+					tll.goBackwardAndAlign();
+					obstacle = isObstacle();
+				}
+				goForwardX();
+				robot.rotate(-90);	// positive y
+				tll.goBackwardAndAlign();
 				travelToZone(xBottomLeft, yBottomLeft);
-			}       
-		}
+			}
+		}       
 	}
-	
+
 	/**Helper method for travelToZone.
 	 * Goes forward x, updates the x tile counter and corrects the odometry.
 	 * 
@@ -193,7 +215,7 @@ public class Search {
 	
 	
 
-	/**Performs the search once the zone is reached.
+	/**Performs the search once the zone is reached. The robot rotates 360 degrees at each intersection in the zone until it finds the flag.
 	 * 
 	 * @param xBottomLeft
 	 * @param yBottomLeft
@@ -204,46 +226,61 @@ public class Search {
 		int xChecks = xTopRight - xBottomLeft -1;
 		int yChecks = yTopRight - yBottomLeft -1;
 		robot.rotate(90);
-		//navigation.goForwardWithoutPolling(TILE_DISTANCE);
 		tll.goToNextLine();
 		xChecks --;
+		xPositionInZone++;
 		robot.rotate(-90);
-		//navigation.goForwardWithoutPolling(TILE_DISTANCE);
+		tll.goBackwardAndAlign();
 		tll.goToNextLine();
 		yChecks --;
+		yPositionInZone++;
+		robot.rotate(90);
+		tll.goBackwardAndAlign();
+		robot.rotate(-90);
 		objectDetector.rotateAndPoll(flagColor);
 		if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-			navigation.backtrack(20);
-			robot.rotate(180);
-			clawMotor.rotate(-600);
-			navigation.backtrack(25);
-			clawMotor.rotate(500);
-			robot.rotate(180);
-			navigation.backtrack(5);
-			navigation.backtrack(objectDetector.getDistanceToObject());  
-			navigation.turnTo(Odometer.minimumAngleFromTo(odometer.getAng(), 0));
+			grabFlag();
 
 		}
 		else {
 			while (xChecks !=0 || yChecks !=0){
 				if(yChecks != 0){
-					//navigation.goForwardWithoutPolling(TILE_DISTANCE);
 					robot.setForwardSpeed(5);
-					//navigation.goForwardWithoutPolling(3);
 					tll.goBackwardAndAlign();
+					robot.rotate(90);
+					navigation.goForwardWithoutPolling(3);
+					tll.goBackwardAndAlign();
+					robot.rotate(-90);
 					tll.goToNextLine();
 					yChecks --;
+					yPositionInZone++;
+					robot.rotate(90);
+					tll.goBackwardAndAlign();
+					robot.rotate(-90);
 					objectDetector.rotateAndPoll(flagColor);
 					if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
-						navigation.backtrack(20);
-						robot.rotate(180);
-						clawMotor.rotate(-600);
-						navigation.backtrack(25);
-						clawMotor.rotate(500);
-						robot.rotate(180);
-						navigation.backtrack(5);
-						navigation.backtrack(objectDetector.getDistanceToObject());
-						navigation.turnTo(Odometer.minimumAngleFromTo(odometer.getAng(), 0));
+						grabFlag();
+						break;
+					}
+				}
+				if(xChecks != 0){
+					robot.setForwardSpeed(5);
+					tll.goBackwardAndAlign();
+					robot.rotate(90);
+					navigation.goForwardWithoutPolling(3);
+					tll.goBackwardAndAlign();
+					tll.goToNextLine();
+					robot.rotate(-90);
+					navigation.goForwardWithoutPolling(3);
+					tll.goBackwardAndAlign();
+					xChecks --;
+					xPositionInZone++;
+					objectDetector.rotateAndPoll(flagColor);
+					if(objectDetector.getObject().equals(ObjectDetector.ObjectType.FLAG)){
+						grabFlag();
+						robot.rotate(-90);
+						break;
+
 					}
 				}
 			}
@@ -251,12 +288,89 @@ public class Search {
 			robot.setForwardSpeed(5);
 			//navigation.goForwardWithoutPolling(3);
 			tll.goBackwardAndAlign();
+			robot.rotate(90);
+			navigation.goForwardWithoutPolling(3);
+			tll.goBackwardAndAlign();
+			robot.rotate(90);
 		}
 	}
 	
-	public void travelToDropOff(int x, int y){
-	
+	/**
+	 * Makes the robot rotate and grab the flag once it is detected.
+	 */
+	public void grabFlag(){
+		navigation.backtrack(20);
+		robot.rotate(180);
+		clawMotor.rotate(-600);
+		navigation.backtrack(25);
+		clawMotor.rotate(450);
+		robot.rotate(180);
+		navigation.backtrack(5);
+		navigation.backtrack(objectDetector.getDistanceToObject());
+		navigation.turnTo(Odometer.minimumAngleFromTo(odometer.getAng(), 0));
+	}
+	/**Makes the robot travel to the drop off zone once it caught the flag.
+	 * From wherever the robot caught the flag it navigates back to the bottom left corner of the opponent's zone.
+	 * From there it calls travelToZone to travel to the drop off zone.
+	 * 
+	 * @param xBottomLeft the x coordinate bottom left corner of the opponent's zone
+	 * @param yBottomLeft the y coordinate bottom left corner of the opponent's zone
+	 * @param xBottomLeftDropOff the x coordinate bottom left corner of the drop off zone
+	 * @param yBottomLeftDropOff the y coordinate bottom left corner of the drop off zone
+	 */
+	public void travelToDropOff(int xBottomLeft, int yBottomLeft, int xBottomLeftDropOff, int yBottomLeftDropOff){
+		tll.goBackwardAndAlign();
+		while(xPositionInZone !=0 || yPositionInZone !=0){
+			if(xPositionInZone !=0){
+				robot.rotate(90);
+				tll.goBackwardAndAlign();
+				tll.goToNextLine();
+				xPositionInZone--;
+				robot.rotate(-90);
+			}
+			if(yPositionInZone !=0){
+				robot.rotate(90);
+				tll.goBackwardAndAlign();
+				robot.rotate(-90);
+				tll.goToNextLine();
+				yPositionInZone--;
+			}
+		}
+		robot.rotate(180);
+		navigation.goForwardWithoutPolling(3);
+		tll.goBackwardAndAlign();
+		int xDestination = xBottomLeftDropOff - xBottomLeft;
+		int yDestination = yBottomLeftDropOff - yBottomLeft;
+		x=0;
+		y=0;
 		
+		if(xDestination >=0 && yDestination <=0){
+			robot.rotate(90);
+			tll.goBackwardAndAlign();
+			odometer.setPosition(new double [] {0.0, 0.0 , 0.0}, new boolean [] {true, true, true});
+			travelToZone(-yDestination, xDestination);
+			
+		}
+		else if(xDestination <=0 && yDestination >= 0){
+			robot.rotate(-90);
+			tll.goBackwardAndAlign();
+			odometer.setPosition(new double [] {0.0, 0.0 , 0.0}, new boolean [] {true, true, true});
+			travelToZone(yDestination, -xDestination);
+		}
+		
+		else if(xDestination <= 0 && yDestination <=0 ){
+			robot.rotate(180);
+			tll.goBackwardAndAlign();
+			odometer.setPosition(new double [] {0.0, 0.0 , 0.0}, new boolean [] {true, true, true});
+			travelToZone(-xDestination, -yDestination);
+		}
+		
+		else{
+			odometer.setPosition(new double [] {0.0, 0.0 , 0.0}, new boolean [] {true, true, true});
+			travelToZone(xDestination, yDestination);
+		}
+		robot.rotate(45);
+		clawMotor.rotate(-600);
 	}
 
 		

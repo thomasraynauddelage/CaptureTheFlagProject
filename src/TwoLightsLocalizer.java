@@ -67,7 +67,7 @@ private int rightThird;
 	 * 
 	 */
 	public void goForwardAndAlign(){
-		robot.setForwardSpeed(10);
+		robot.setForwardSpeed(15);
 		boolean firstLineFound = false;
 		
 		Sensor sensor = Sensor.NULL;
@@ -120,7 +120,7 @@ private int rightThird;
 	}
 	
 	public void goToNextLine(){
-		robot.setForwardSpeed(10);
+		robot.setForwardSpeed(15);
 		boolean firstLineFound = false;
 
 		Sensor sensor = Sensor.NULL;
